@@ -1,14 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
+using Unity.VisualScripting;
 
-public class PlayerMove : MonoBehaviour
+public class PlayerMove : NetworkBehaviour
 {
     public float speed = 5f;
-    void Start()
+ 
+
+    public override void OnNetworkSpawn()
     {
-        
+        if (!IsOwner) Destroy(this);
     }
+    
 
     void Update()
     {
@@ -17,6 +22,6 @@ public class PlayerMove : MonoBehaviour
 
         Vector3 movement = new Vector3(moveHorizontal, 0f, moveVertical);
 
-        transform.Translate(movement * speed/10 );
+        transform.Translate(movement * speed/ 10);
     }
 }
