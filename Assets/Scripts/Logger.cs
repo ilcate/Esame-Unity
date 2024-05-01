@@ -1,4 +1,4 @@
-using System.Linq;
+/*using System.Linq;
 using DilmerGames.Core.Singletons;
 using TMPro;
 using UnityEngine;
@@ -61,3 +61,4 @@ public class Logger : Singleton<Logger>
         }
     }
 }
+*/
