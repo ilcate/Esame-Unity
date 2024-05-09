@@ -34,7 +34,18 @@ public class UIManager : Singleton<UIManager>
 
     void Start()
     {
+<<<<<<< HEAD
        
+=======
+        // START SERVER
+        startServerButton?.onClick.AddListener(() =>
+        {
+            if (NetworkManager.Singleton.StartServer())
+                Debug.Log("Server started...");
+            else
+                Debug.Log("Server started...");
+        });
+>>>>>>> 2b1a2a97473ec55908fa42093a3922ca61dbc25f
 
         // START HOST
         startHostButton?.onClick.AddListener(async () =>
@@ -46,9 +57,9 @@ public class UIManager : Singleton<UIManager>
                 await RelayManager.Instance.SetupRelay();
 
             if (NetworkManager.Singleton.StartHost())
-                Logger.Instance.LogInfo("Host started...");
+                Debug.Log("Host started...");
             else
-                Logger.Instance.LogInfo("Unable to start host...");
+                Debug.Log("Unable to start host...");
         });
 
         // START CLIENT
@@ -58,14 +69,15 @@ public class UIManager : Singleton<UIManager>
                 await RelayManager.Instance.JoinRelay(joinCodeInput.text);
 
             if (NetworkManager.Singleton.StartClient())
-                Logger.Instance.LogInfo("Client started...");
+                Debug.Log("Client started...");
+            
             else
-                Logger.Instance.LogInfo("Unable to start client...");
+                Debug.Log("Unable to start client...");
         });
         // STATUS TYPE CALLBACKS
         NetworkManager.Singleton.OnClientConnectedCallback += (id) =>
         {
-            Logger.Instance.LogInfo($"{id} just connected...");
+            Debug.Log($"{id} just connected...");
         };
 
         
