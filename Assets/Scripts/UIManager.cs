@@ -24,7 +24,6 @@ public class UIManager : Singleton<UIManager>
     [SerializeField]
     private Button executePhysicsButton;
 
-    private bool hasServerStarted;
 
     private void Awake()
     {
@@ -35,14 +34,7 @@ public class UIManager : Singleton<UIManager>
 
     void Start()
     {
-        // START SERVER
-        startServerButton?.onClick.AddListener(() =>
-        {
-            if (NetworkManager.Singleton.StartServer())
-                Logger.Instance.LogInfo("Server started...");
-            else
-                Logger.Instance.LogInfo("Unable to start server...");
-        });
+       
 
         // START HOST
         startHostButton?.onClick.AddListener(async () =>
@@ -76,10 +68,7 @@ public class UIManager : Singleton<UIManager>
             Logger.Instance.LogInfo($"{id} just connected...");
         };
 
-        NetworkManager.Singleton.OnServerStarted += () =>
-        {
-            hasServerStarted = true;
-        };
+        
 
     }
 }
