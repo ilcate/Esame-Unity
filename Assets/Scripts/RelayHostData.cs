@@ -9,5 +9,4 @@ public struct RelayHostData
     public byte[] AllocationIDBytes;
     public byte[] ConnectionData;
     public byte[] Key;
-    public string Name;
 }

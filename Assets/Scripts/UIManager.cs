@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : Singleton<UIManager>
+public class UIManager : NetworkBehaviour
 {
     [SerializeField]
     private Button startServerButton;
@@ -26,6 +26,11 @@ public class UIManager : Singleton<UIManager>
 
     [SerializeField]
     private Button executePhysicsButton;
+
+    [SerializeField]
+    private TextMeshProUGUI PlayerDisplay;
+
+    private NetworkVariable<int> playersCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone);
 
 
     private void Awake()
@@ -79,5 +84,13 @@ public class UIManager : Singleton<UIManager>
 
         
 
+    }
+
+    private void Update()
+    {
+        PlayerDisplay.text = "Players: " + playersCount.Value.ToString();
+        if (!IsServer) return;
+        playersCount.Value = NetworkManager.Singleton.ConnectedClients.Count;
+       
     }
 }

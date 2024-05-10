@@ -44,9 +44,7 @@ public class RelayManager : Singleton<RelayManager>
             AllocationID = allocation.AllocationId,
             AllocationIDBytes = allocation.AllocationIdBytes,
             IPv4Address = allocation.RelayServer.IpV4,
-            ConnectionData = allocation.ConnectionData,
-            Name = "culo"
-           
+            ConnectionData = allocation.ConnectionData           
         };
 
         relayHostData.JoinCode = await Relay.Instance.GetJoinCodeAsync(relayHostData.AllocationID);
@@ -80,9 +78,7 @@ public class RelayManager : Singleton<RelayManager>
             ConnectionData = allocation.ConnectionData, 
             HostConnectionData = allocation.HostConnectionData,
             IPv4Address = allocation.RelayServer.IpV4,
-            JoinCode = joinCode,
-            Name = "mem"
-
+            JoinCode = joinCode
         };
 
         Transport.SetRelayServerData(relayJoinData.IPv4Address, relayJoinData.Port, relayJoinData.AllocationIDBytes, relayJoinData.Key, relayJoinData.ConnectionData, relayJoinData.HostConnectionData);

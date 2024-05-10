@@ -11,6 +11,5 @@ public struct RelayJoinData
     public byte[] ConnectionData;
     public byte[] HostConnectionData;
     public byte[] Key;
-    public string Name;
 }
 
