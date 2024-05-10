@@ -22,6 +22,9 @@ public class UIManager : Singleton<UIManager>
     private TMP_InputField joinCodeInput;
 
     [SerializeField]
+    private TMP_InputField Username;
+
+    [SerializeField]
     private Button executePhysicsButton;
 
 
@@ -42,30 +45,36 @@ public class UIManager : Singleton<UIManager>
             // this allows the UnityMultiplayer and UnityMultiplayerRelay scene to work with and without
             // relay features - if the Unity transport is found and is relay protocol then we redirect all the 
             // traffic through the relay, else it just uses a LAN type (UNET) communication.
+
+
+            PlayerMove.PassName(Username.GetComponent<TMP_InputField>().text);
+
             if (RelayManager.Instance.isRelayEnabled)
                 await RelayManager.Instance.SetupRelay();
 
             if (NetworkManager.Singleton.StartHost())
-                Logger.Instance.LogInfo("Host started...");
+                Debug.Log("Host started...");
+
             else
-                Logger.Instance.LogInfo("Unable to start host...");
+                Debug.Log("Unable to start host...");
         });
 
         // START CLIENT
         startClientButton?.onClick.AddListener(async () =>
         {
+            PlayerMove.PassName(Username.GetComponent<TMP_InputField>().text);
             if (RelayManager.Instance.isRelayEnabled && !string.IsNullOrEmpty(joinCodeInput.text))
                 await RelayManager.Instance.JoinRelay(joinCodeInput.text);
 
             if (NetworkManager.Singleton.StartClient())
-                Logger.Instance.LogInfo("Client started...");
+                Debug.Log("Client started...");
             else
-                Logger.Instance.LogInfo("Unable to start client...");
+                Debug.Log("Unable to start client...");
         });
         // STATUS TYPE CALLBACKS
         NetworkManager.Singleton.OnClientConnectedCallback += (id) =>
         {
-            Logger.Instance.LogInfo($"{id} just connected...");
+            Debug.Log($"{id} just connected...");
         };
 
         

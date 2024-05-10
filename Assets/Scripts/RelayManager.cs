@@ -35,7 +35,6 @@ public class RelayManager : Singleton<RelayManager>
             await AuthenticationService.Instance.SignInAnonymouslyAsync();  
         }
 
-        //allocation serve per bloccare un server per una sessione, così non fa altro
         Allocation allocation = await Relay.Instance.CreateAllocationAsync(maxConnections);
 
         RelayHostData relayHostData = new RelayHostData
@@ -45,7 +44,9 @@ public class RelayManager : Singleton<RelayManager>
             AllocationID = allocation.AllocationId,
             AllocationIDBytes = allocation.AllocationIdBytes,
             IPv4Address = allocation.RelayServer.IpV4,
-            ConnectionData = allocation.ConnectionData
+            ConnectionData = allocation.ConnectionData,
+            Name = "culo"
+           
         };
 
         relayHostData.JoinCode = await Relay.Instance.GetJoinCodeAsync(relayHostData.AllocationID);
@@ -79,7 +80,8 @@ public class RelayManager : Singleton<RelayManager>
             ConnectionData = allocation.ConnectionData, 
             HostConnectionData = allocation.HostConnectionData,
             IPv4Address = allocation.RelayServer.IpV4,
-            JoinCode = joinCode
+            JoinCode = joinCode,
+            Name = "mem"
 
         };
 
