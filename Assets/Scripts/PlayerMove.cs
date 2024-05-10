@@ -35,11 +35,12 @@ public class PlayerMove : NetworkBehaviour
 
         if (!IsOwner) Destroy(this);
 
-        PlayerInfo.AssignName(passed);
+       
+
+        //PlayerInfo.AssignName(passed);
 
 
-        //playerName = "cazzo";
-        transform.position = new Vector3(-10, 0f, -5);
+        transform.position = new Vector3(Random.Range(-20, 20), 0f, Random.Range(-20, 20));
     }
 
     void Start()
