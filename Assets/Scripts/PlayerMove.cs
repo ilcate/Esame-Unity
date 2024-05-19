@@ -7,9 +7,6 @@ using TMPro;
 
 
 
-  
-
-
 public class PlayerMove : NetworkBehaviour
 {
     public float speed = 10f;
@@ -22,42 +19,26 @@ public class PlayerMove : NetworkBehaviour
 
     Rigidbody rb;
 
-    [SerializeField]
-    Texture2D rougeTexture;
-
-    //rouge verde
-    //default viola
-    //
-
     //[SerializeField]
     //Texture2D rougeTexture;
 
     //[SerializeField]
-    //Texture2D rougeTexture;
+    //GameObject armLeft;
 
     //[SerializeField]
-    //Texture2D rougeTexture;
+    //GameObject armRight;
 
-    [SerializeField]
-    GameObject armLeft;
+    //[SerializeField]
+    //GameObject body;
 
-    [SerializeField]
-    GameObject armRight;
+    //[SerializeField]
+    //GameObject head;
 
-    [SerializeField]
-    GameObject body;
+    //[SerializeField]
+    //GameObject legLeft;
 
-    [SerializeField]
-    GameObject head;
-
-    [SerializeField]
-    GameObject legLeft;
-
-    [SerializeField]
-    GameObject legRight;
-
-    [SerializeField]
-    GameObject hat;
+    //[SerializeField]
+    //GameObject legRight;
 
 
 
@@ -80,9 +61,10 @@ public class PlayerMove : NetworkBehaviour
         //Texture2D textureRouge = (Texture2D)Resources.Load("Assets/PlayerModels/fbx/rogue_texture.png");
 
         //Debug.Log(textureRouge);
-        hat.GetComponent<Renderer>().material.mainTexture = rougeTexture;
+        //hat.GetComponent<Renderer>().material.mainTexture = rougeTexture;
         //ChangeSkin();
-        transform.position = new Vector3(Random.Range(-20, 20), 0f, Random.Range(-20, 20));
+        //transform.position = new Vector3(Random.Range(-20, 20), 0f, Random.Range(-20, 20));
+        transform.position = new Vector3(0f, 0f, 0f);
     }
 
     void Start()
