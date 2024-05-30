@@ -18,6 +18,10 @@ public class PlayerSetting : NetworkBehaviour
     Texture2D barbarianTexture;
     [SerializeField]
     Texture2D knightTexture;
+    
+
+
+
 
     [SerializeField]
     GameObject hat;
@@ -48,4 +52,6 @@ public class PlayerSetting : NetworkBehaviour
                 break;
         }
     }
+
+    
 }

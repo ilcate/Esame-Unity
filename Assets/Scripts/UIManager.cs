@@ -52,7 +52,6 @@ public class UIManager : NetworkBehaviour
             // traffic through the relay, else it just uses a LAN type (UNET) communication.
 
 
-            PlayerMove.PassName(Username.GetComponent<TMP_InputField>().text);
 
             if (RelayManager.Instance.isRelayEnabled)
                 await RelayManager.Instance.SetupRelay();
@@ -67,7 +66,6 @@ public class UIManager : NetworkBehaviour
         // START CLIENT
         startClientButton?.onClick.AddListener(async () =>
         {
-            PlayerMove.PassName(Username.GetComponent<TMP_InputField>().text);
             if (RelayManager.Instance.isRelayEnabled && !string.IsNullOrEmpty(joinCodeInput.text))
                 await RelayManager.Instance.JoinRelay(joinCodeInput.text);
 

@@ -455,7 +455,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 932260987
+  GlobalObjectIdHash: 3373412039
   InScenePlacedSourceGlobalObjectIdHash: 3367477853
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -513,9 +513,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e668b3ff67fefb04bbc264cdc965485b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectToInstantiate: {fileID: 1142682751626895652, guid: aecce0554039a442bbf184611b777087, type: 3}
   speed: 10
   rotationSpeed: 180
-  hat: {fileID: 0}
 --- !u!54 &1948602017581336904
 Rigidbody:
   m_ObjectHideFlags: 0
