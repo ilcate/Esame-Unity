@@ -16,7 +16,6 @@ public class PlayerMove : NetworkBehaviour
     Rigidbody rb;
 
     // Campo serializzabile per il prefab
-    [SerializeField] private GameObject objectToInstantiate;
 
     public static void PassName(string inputUsername)
     {
@@ -55,13 +54,7 @@ public class PlayerMove : NetworkBehaviour
         rb.velocity = new Vector3(moveHorizontal, 0, moveVertical) * speed;
 
         // Listener per il tasto "e"
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Debug.Log("cliccato");
-            Vector3 spawnPosition = transform.position + transform.forward;
-            spawnPosition.y = 1;
-            spawnPosition.z = 1;
-            Instantiate(objectToInstantiate, spawnPosition, Quaternion.identity);
-        }
+
+        
     }
 }

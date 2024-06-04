@@ -411,6 +411,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5644163991764429101}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5826688629870431040}
   m_SourcePrefab: {fileID: 100100000, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}
 --- !u!1 &6063741512603508091 stripped
 GameObject:
@@ -455,7 +458,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3373412039
+  GlobalObjectIdHash: 4246506204
   InScenePlacedSourceGlobalObjectIdHash: 3367477853
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -513,7 +516,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e668b3ff67fefb04bbc264cdc965485b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectToInstantiate: {fileID: 1142682751626895652, guid: aecce0554039a442bbf184611b777087, type: 3}
   speed: 10
   rotationSpeed: 180
 --- !u!54 &1948602017581336904
@@ -729,6 +731,20 @@ MonoBehaviour:
   barbarianTexture: {fileID: 2800000, guid: a9660b43b7e8d45a5b101d6c77af9ca2, type: 3}
   knightTexture: {fileID: 2800000, guid: a42a9d54a9d184958adaf76ef0b792f0, type: 3}
   hat: {fileID: 6063741512603508091}
+--- !u!114 &5826688629870431040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8544053390274929476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d552e9c55465e4f43856fe9bd8ae44a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireball: {fileID: 1142682751626895652, guid: aecce0554039a442bbf184611b777087, type: 3}
+  shootTransform: {fileID: 9068353983566805502}
 --- !u!4 &9068353983566805502 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}
