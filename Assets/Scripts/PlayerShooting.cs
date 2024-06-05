@@ -12,14 +12,15 @@ public class PlayerShooting : NetworkBehaviour
 
     private void Update()
     {
-        if (IsOwner && Input.GetKeyDown(KeyCode.E))
+        if(!IsOwner) enabled = false;
+        if (Input.GetKeyDown(KeyCode.E))
         {
             Debug.Log("Shoot");
             ShootServerRpc();
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [ServerRpc]
     private void ShootServerRpc()
     {
         GameObject fireball = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
