@@ -22,7 +22,6 @@ public class PlayerShooting : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void ShootServerRpc()
     {
-        Debug.Log("ENTRA");
         GameObject fireball = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
         NetworkObject networkObject = fireball.GetComponent<NetworkObject>();
         networkObject.Spawn(true);
