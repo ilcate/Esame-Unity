@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class projectileMove : MonoBehaviour
+public class projectileMove : NetworkBehaviour
 {
+    public PlayerShooting parent;
     [SerializeField] private float speed = 10f;
     private Rigidbody rb;
 
@@ -19,7 +21,9 @@ public class projectileMove : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.collider);
-        Destroy(gameObject);
+        // Debug.Log(collision.collider);
+        // Destroy(gameObject);
+        if(!IsOwner) return;
+        parent.DestroyServerRpc();
     }
 }

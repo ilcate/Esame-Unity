@@ -3,20 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public class PlayerShooting : MonoBehaviour
+public class PlayerShooting : NetworkBehaviour
 {
     [SerializeField] private GameObject fireball;
     [SerializeField] private Transform shootTransform;
 
-    // Update is called once per frame
+    [SerializeField] private List<GameObject> shootList = new List<GameObject>();
     void Update()
     {
-        //if (!IsOwner) return;
+        if (!IsOwner) return;
         if (Input.GetKeyDown(KeyCode.E))
         {
-            //GameObject go =
-            //go.GetComponent<NetworkObject>().Spawn();
-            Instantiate(fireball, shootTransform.position, shootTransform.rotation);
+            ShootServerRpc();            
         }
+    }
+
+    [ServerRpc]
+    private void ShootServerRpc()
+    {
+        GameObject go = Instantiate(fireball, shootTransform.position, shootTransform.rotation);
+        shootList.Add(go);
+        go.GetComponent<projectileMove>().parent = this;
+        go.GetComponent<NetworkObject>().Spawn();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void DestroyServerRpc()
+    {
+        GameObject toDestroy = shootList[0];
+        toDestroy.GetComponent<NetworkObject>().Despawn();
+        shootList.Remove(toDestroy);
+        Destroy(toDestroy);
     }
 }
