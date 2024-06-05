@@ -6,7 +6,7 @@ using TMPro;
 
 public class PlayerMove : NetworkBehaviour
 {
-    public float speed = 10f;
+    public float speed = 15f;
     public float rotationSpeed = 360f;
     private static string passed;
 
@@ -51,10 +51,8 @@ public class PlayerMove : NetworkBehaviour
             animator.SetBool("IsMoving", false);
         }
 
-        rb.velocity = new Vector3(moveHorizontal, 0, moveVertical) * speed;
-
-        // Listener per il tasto "e"
-
+        Vector3 movement = new Vector3(moveHorizontal, 0, moveVertical) * speed * Time.deltaTime;
+        rb.MovePosition(transform.position + movement);
 
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 public class ProjectileMove : NetworkBehaviour
 {
     public PlayerShooting parent;
-    [SerializeField] private float speed = 40f;
+    [SerializeField] private float speed = 20f;
     private Rigidbody rb;
 
     void Start()
@@ -16,18 +16,15 @@ public class ProjectileMove : NetworkBehaviour
 
     void Update()
     {
-        if (IsOwner)
-        {
-            Vector3 movement = transform.forward * speed * Time.deltaTime;
-            rb.MovePosition(rb.transform.position + movement);
-        }
+        Vector3 movement = rb.transform.forward * speed * Time.deltaTime;
+        rb.MovePosition(rb.transform.position + movement);
     }
 
-   
-
-    /*void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter(Collision collision)
     {
-        if (!IsOwner) return;
-        parent.DestroyServerRpc();
-    }*/
+        Debug.Log(collision.collider);
+        //Destroy(gameObject);
+        //if (!IsOwner) return;
+        //parent.DestroyServerRpc();
+    }
 }
