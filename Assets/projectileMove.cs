@@ -20,25 +20,10 @@ public class ProjectileMove : NetworkBehaviour
         {
             Vector3 movement = transform.forward * speed * Time.deltaTime;
             rb.MovePosition(rb.transform.position + movement);
-            UpdatePositionServerRpc(rb.transform.position);
         }
     }
 
-    [ServerRpc]
-    void UpdatePositionServerRpc(Vector3 newPosition)
-    {
-        rb.MovePosition(newPosition);
-        UpdatePositionClientRpc(newPosition);
-    }
-
-    [ClientRpc]
-    void UpdatePositionClientRpc(Vector3 newPosition)
-    {
-        if (!IsOwner)
-        {
-            rb.MovePosition(newPosition);
-        }
-    }
+   
 
     /*void OnCollisionEnter(Collision collision)
     {

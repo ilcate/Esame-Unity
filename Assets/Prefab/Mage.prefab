@@ -447,10 +447,7 @@ PrefabInstance:
       addedObject: {fileID: 5826688629870431040}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6125416320624589879}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7328932982896842823}
+      addedObject: {fileID: 8457744618814586091}
   m_SourcePrefab: {fileID: 100100000, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}
 --- !u!1 &6063741512603508091 stripped
 GameObject:
@@ -495,7 +492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4246506204
+  GlobalObjectIdHash: 932260987
   InScenePlacedSourceGlobalObjectIdHash: 3367477853
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -755,8 +752,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireballPrefab: {fileID: 1142682751626895652, guid: aecce0554039a442bbf184611b777087, type: 3}
   shootTransform: {fileID: 4432957948409221935}
-  shootList: []
---- !u!54 &6125416320624589879
+--- !u!54 &8457744618814586091
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -764,9 +760,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8544053390274929476}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 100
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 1000
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -783,18 +779,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
---- !u!114 &7328932982896842823
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8544053390274929476}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &9068353983566805502 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}
