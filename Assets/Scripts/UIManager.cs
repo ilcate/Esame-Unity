@@ -30,7 +30,7 @@ public class UIManager : NetworkBehaviour
     [SerializeField]
     private TextMeshProUGUI PlayerDisplay;
 
-    private NetworkVariable<int> playersCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone);
+    //private NetworkVariable<int> playersCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone);
 
 
     private void Awake()
@@ -84,11 +84,11 @@ public class UIManager : NetworkBehaviour
 
     }
 
-    private void Update()
-    {
-        PlayerDisplay.text = "Players: " + playersCount.Value.ToString();
-        if (!IsServer) return;
-        playersCount.Value = NetworkManager.Singleton.ConnectedClients.Count;
+    //private void Update()
+    //{
+    //    PlayerDisplay.text = "Players: " + playersCount.Value.ToString();
+    //    if (!IsServer) return;
+    //    playersCount.Value = NetworkManager.Singleton.ConnectedClients.Count;
        
-    }
+    //}
 }

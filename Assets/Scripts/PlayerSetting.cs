@@ -8,7 +8,7 @@ using Unity.Collections;
 public class PlayerSetting : NetworkBehaviour
 {
     [SerializeField] private TextMeshProUGUI playerName;
-    [SerializeField] private NetworkVariable<FixedString128Bytes> networkPlayerName = new NetworkVariable<FixedString128Bytes>("Player: 0", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    //[SerializeField] private NetworkVariable<FixedString128Bytes> networkPlayerName = new NetworkVariable<FixedString128Bytes>("Player: 0", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
     [SerializeField]
     Texture2D rougeTexture;
@@ -28,8 +28,17 @@ public class PlayerSetting : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        networkPlayerName.Value = "Player: " + (OwnerClientId + 1);
-        playerName.text = networkPlayerName.Value.ToString();
+        //Debug.Log("On network spawn");
+        //Debug.Log(OwnerClientId);
+        //Debug.Log(IsOwner);
+
+        //if (IsOwner)
+        //{
+        //    networkPlayerName.Value = "Player: " + (OwnerClientId + 1);
+        //}
+
+        //playerName.text = networkPlayerName.Value.ToString();
+
 
         Renderer hatRenderer = hat.GetComponent<Renderer>();
 

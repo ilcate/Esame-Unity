@@ -12,7 +12,7 @@ public class PlayerShooting : NetworkBehaviour
 
     private void Update()
     {
-        if(!IsOwner) return;
+        if (!IsOwner) return;
         if (Input.GetKeyDown(KeyCode.E))
         {
             ShootServerRpc();
@@ -25,8 +25,14 @@ public class PlayerShooting : NetworkBehaviour
         Debug.Log("Shoot");
         GameObject go = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
         spawnedFireBalls.Add(go);
-        go.GetComponent<ProjectileMove>().parent = this;
-        go.GetComponent<NetworkObject>().Spawn();
+
+        // Set the parent reference and initial velocity 
+        ProjectileMove projectileMove = go.GetComponent<ProjectileMove>();
+        projectileMove.parent = this;
+        projectileMove.Initialize(shootTransform.forward);  // Initialize with the forward direction of the shoot transform 
+
+        // Spawn the networked object 
+        go.GetComponent<NetworkObject>().Spawn(true); // Ensuring ownership is set correctly 
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -36,9 +42,8 @@ public class PlayerShooting : NetworkBehaviour
         {
             GameObject toDestroy = spawnedFireBalls[0];
             toDestroy.GetComponent<NetworkObject>().Despawn();
-            spawnedFireBalls.RemoveAt(0); // Use RemoveAt for cleaner code
+            spawnedFireBalls.RemoveAt(0);
             Destroy(toDestroy);
         }
     }
-
 }
