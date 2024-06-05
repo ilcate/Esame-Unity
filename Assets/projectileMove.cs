@@ -20,18 +20,19 @@ public class ProjectileMove : NetworkBehaviour
         {
             Vector3 movement = transform.forward * speed * Time.deltaTime;
             rb.MovePosition(rb.transform.position + movement);
-            UpdateServerPositionServerRpc(rb.transform.position);
+            UpdatePositionServerRpc(rb.transform.position);
         }
     }
 
     [ServerRpc]
-    void UpdateServerPositionServerRpc(Vector3 newPosition)
+    void UpdatePositionServerRpc(Vector3 newPosition)
     {
-        UpdateClientPositionClientRpc(newPosition);
+        rb.MovePosition(newPosition);
+        UpdatePositionClientRpc(newPosition);
     }
 
     [ClientRpc]
-    void UpdateClientPositionClientRpc(Vector3 newPosition)
+    void UpdatePositionClientRpc(Vector3 newPosition)
     {
         if (!IsOwner)
         {
@@ -41,8 +42,6 @@ public class ProjectileMove : NetworkBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        // Debug.Log(collision.collider);
-        // Destroy(gameObject);
         if (!IsOwner) return;
         parent.DestroyServerRpc();
     }

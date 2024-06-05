@@ -5,10 +5,11 @@ using Unity.Netcode;
 
 public class PlayerShooting : NetworkBehaviour
 {
-    [SerializeField] private GameObject fireball;
+    [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private Transform shootTransform;
 
     [SerializeField] private List<GameObject> shootList = new List<GameObject>();
+
     void Update()
     {
         if (!IsOwner) return;
@@ -22,10 +23,11 @@ public class PlayerShooting : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void ShootServerRpc()
     {
-        GameObject go = Instantiate(fireball, shootTransform.position, shootTransform.rotation);
-        shootList.Add(go);
+        GameObject go = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
+        NetworkObject networkObject = go.GetComponent<NetworkObject>();
+        networkObject.Spawn(true);
         go.GetComponent<ProjectileMove>().parent = this;
-        go.GetComponent<NetworkObject>().Spawn();
+        shootList.Add(go);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -34,8 +36,9 @@ public class PlayerShooting : NetworkBehaviour
         if (shootList.Count > 0)
         {
             GameObject toDestroy = shootList[0];
-            toDestroy.GetComponent<NetworkObject>().Despawn();
-            shootList.Remove(toDestroy);
+            shootList.RemoveAt(0);
+            NetworkObject networkObject = toDestroy.GetComponent<NetworkObject>();
+            networkObject.Despawn(true);
             Destroy(toDestroy);
         }
     }
