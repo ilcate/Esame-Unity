@@ -27,7 +27,8 @@ public class PlayerShooting : NetworkBehaviour
         go.GetComponent<NetworkObject>().Spawn();
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    /*[ServerRpc(RequireOwnership = false)]
+    /*[ServerRpc(RequireOwnership = false)]
     public void DestroyServerRpc()
     {
         if (shootList.Count > 0)
@@ -37,5 +38,5 @@ public class PlayerShooting : NetworkBehaviour
             shootList.Remove(toDestroy);
             Destroy(toDestroy);
         }
-    }
+    }*/
 }
