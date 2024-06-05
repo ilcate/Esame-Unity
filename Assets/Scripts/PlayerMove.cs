@@ -6,7 +6,7 @@ using TMPro;
 
 public class PlayerMove : NetworkBehaviour
 {
-    public float speed = 10f;
+    public float speed = 15f;
     public float rotationSpeed = 360f;
     private static string passed;
 

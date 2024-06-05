@@ -6,7 +6,7 @@ using UnityEngine;
 public class ProjectileMove : NetworkBehaviour
 {
     public PlayerShooting parent;
-    [SerializeField] private float speed = 10f;
+    [SerializeField] private float speed = 20f;
     private Rigidbody rb;
 
     void Start()

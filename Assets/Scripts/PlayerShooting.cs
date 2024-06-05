@@ -14,6 +14,7 @@ public class PlayerShooting : NetworkBehaviour
         if (!IsOwner) return;
         if (Input.GetKeyDown(KeyCode.E))
         {
+            Debug.Log("Spara");
             ShootServerRpc();
         }
     }
