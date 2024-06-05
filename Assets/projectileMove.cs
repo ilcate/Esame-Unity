@@ -16,13 +16,14 @@ public class ProjectileMove : NetworkBehaviour
 
     void Update()
     {
-        rb.velocity = rb.transform.forward * speed;
+        Vector3 movement = rb.transform.forward * speed * Time.deltaTime;
+        rb.MovePosition(rb.transform.position + movement);
     }
 
     void OnCollisionEnter(Collision collision)
     {
-         //Debug.Log(collision.collider);
-         //Destroy(gameObject);
+        //Debug.Log(collision.collider);
+        //Destroy(gameObject);
         if (!IsOwner) return;
         parent.DestroyServerRpc();
     }
