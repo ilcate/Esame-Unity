@@ -23,7 +23,7 @@ public class projectileMove : NetworkBehaviour
     {
         // Debug.Log(collision.collider);
         // Destroy(gameObject);
-        if(!IsOwner) return;
-        parent.DestroyServerRpc();
+        if (!IsOwner) { Destroy(this); }
+        else { parent.DestroyServerRpc(); }
     }
 }

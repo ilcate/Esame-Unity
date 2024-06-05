@@ -14,7 +14,7 @@ public class PlayerShooting : NetworkBehaviour
         if (!IsOwner) return;
         if (Input.GetKeyDown(KeyCode.E))
         {
-            ShootServerRpc();            
+            ShootServerRpc();
         }
     }
 
@@ -30,9 +30,12 @@ public class PlayerShooting : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void DestroyServerRpc()
     {
-        GameObject toDestroy = shootList[0];
-        toDestroy.GetComponent<NetworkObject>().Despawn();
-        shootList.Remove(toDestroy);
-        Destroy(toDestroy);
+        if (shootList.Count > 0)
+        {
+            GameObject toDestroy = shootList[0];
+            toDestroy.GetComponent<NetworkObject>().Despawn();
+            shootList.Remove(toDestroy);
+            Destroy(toDestroy);
+        }
     }
 }
