@@ -11,7 +11,7 @@ public class PlayerShooting : NetworkBehaviour
     [SerializeField] private List<GameObject> shootList = new List<GameObject>();
     void Update()
     {
-        //if (!IsOwner) return;
+        if (!IsOwner) return;
         if (Input.GetKeyDown(KeyCode.E))
         {
             ShootServerRpc();
@@ -24,7 +24,6 @@ public class PlayerShooting : NetworkBehaviour
         GameObject go = Instantiate(fireball, shootTransform.position, shootTransform.rotation);
         shootList.Add(go);
         go.GetComponent<ProjectileMove>().parent = this;
-        if (!IsOwner) return;
         go.GetComponent<NetworkObject>().Spawn();
     }
 
