@@ -14,24 +14,20 @@ public class PlayerShooting : NetworkBehaviour
         if (!IsOwner) return;
         if (Input.GetKeyDown(KeyCode.E))
         {
-            GameObject go = Instantiate(fireball, shootTransform.position, shootTransform.rotation);
-            shootList.Add(go);
-            go.GetComponent<projectileMove>().parent = this;
-            go.GetComponent<NetworkObject>().Spawn();
+            ShootServerRpc();
         }
     }
 
-    /*[ServerRpc]
+    [ServerRpc]
     private void ShootServerRpc()
     {
         GameObject go = Instantiate(fireball, shootTransform.position, shootTransform.rotation);
         shootList.Add(go);
         go.GetComponent<projectileMove>().parent = this;
         go.GetComponent<NetworkObject>().Spawn();
-    }*/
+    }
 
-    /*[ServerRpc(RequireOwnership = false)]
-    /*[ServerRpc(RequireOwnership = false)]
+    [ServerRpc]
     public void DestroyServerRpc()
     {
         if (shootList.Count > 0)
@@ -41,5 +37,5 @@ public class PlayerShooting : NetworkBehaviour
             shootList.Remove(toDestroy);
             Destroy(toDestroy);
         }
-    }*/
+    }
 }

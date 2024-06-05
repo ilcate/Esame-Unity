@@ -21,9 +21,9 @@ public class projectileMove : NetworkBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-         Debug.Log(collision.collider);
-         Destroy(gameObject);
-        //if (!IsOwner) { Destroy(this); }
-       // else { parent.DestroyServerRpc(); }
+         //Debug.Log(collision.collider);
+         //Destroy(gameObject);
+        if (!IsOwner) return;
+        parent.DestroyServerRpc();
     }
 }
