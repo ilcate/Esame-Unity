@@ -27,7 +27,7 @@ public class PlayerShooting : NetworkBehaviour
         go.GetComponent<NetworkObject>().Spawn();
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     public void DestroyServerRpc()
     {
         if (shootList.Count > 0)

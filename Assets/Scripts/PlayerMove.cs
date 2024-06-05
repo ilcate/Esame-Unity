@@ -51,10 +51,9 @@ public class PlayerMove : NetworkBehaviour
             animator.SetBool("IsMoving", false);
         }
 
-        rb.velocity = new Vector3(moveHorizontal, 0, moveVertical) * speed;
+        Vector3 movement = new Vector3(moveHorizontal, 0, moveVertical) * speed * Time.deltaTime;
+        rb.MovePosition(transform.position + movement);
 
-        // Listener per il tasto "e"
-
-        
+       
     }
 }
