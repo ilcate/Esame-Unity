@@ -7,7 +7,6 @@ public class ProjectileMove : NetworkBehaviour
 {
     public PlayerShooting parent;
     [SerializeField] private float speed = 20f;
-    public float spawnDistance = 1f;
     private Rigidbody rb;
 
     void Start()
