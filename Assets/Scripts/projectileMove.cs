@@ -7,24 +7,26 @@ public class ProjectileMove : NetworkBehaviour
 {
     public PlayerShooting parent;
     [SerializeField] private float speed = 20f;
+    public float spawnDistance = 1f;
     private Rigidbody rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-    }
 
-    void Update()
-    {
-        Vector3 movement = rb.transform.forward * speed * Time.deltaTime;
-        rb.MovePosition(rb.transform.position + movement);
+        rb.velocity = transform.forward * speed;
     }
 
     void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject == parent.gameObject)
+        {
+            return;
+        }
+
+        if (!IsOwner) return;
+
         Debug.Log(collision.collider);
-        //Destroy(gameObject);
-        //if (!IsOwner) return;
-        //parent.DestroyServerRpc();
+        parent.DestroyServerRpc();
     }
 }

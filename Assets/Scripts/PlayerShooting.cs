@@ -8,14 +8,13 @@ public class PlayerShooting : NetworkBehaviour
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private Transform shootTransform;
 
-    private List<GameObject> shootList = new List<GameObject>();
+    [SerializeField] private List<GameObject> spawnedFireBalls = new List<GameObject>();
 
     private void Update()
     {
-        if(!IsOwner) enabled = false;
+        if(!IsOwner) return;
         if (Input.GetKeyDown(KeyCode.E))
         {
-            Debug.Log("Shoot");
             ShootServerRpc();
         }
     }
@@ -23,24 +22,23 @@ public class PlayerShooting : NetworkBehaviour
     [ServerRpc]
     private void ShootServerRpc()
     {
-        GameObject fireball = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
-        NetworkObject networkObject = fireball.GetComponent<NetworkObject>();
-        networkObject.Spawn();
-        //fireball.GetComponent<ProjectileMove>().parent = this;
-        //CIAO
-        shootList.Add(fireball);
+        Debug.Log("Shoot");
+        GameObject go = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
+        spawnedFireBalls.Add(go);
+        go.GetComponent<ProjectileMove>().parent = this;
+        go.GetComponent<NetworkObject>().Spawn();
     }
 
     [ServerRpc(RequireOwnership = false)]
     public void DestroyServerRpc()
     {
- 
-            GameObject toDestroy = shootList[0];
-            shootList.RemoveAt(0);
-            NetworkObject networkObject = toDestroy.GetComponent<NetworkObject>();
-            networkObject.Despawn();
+        if (spawnedFireBalls.Count > 0)
+        {
+            GameObject toDestroy = spawnedFireBalls[0];
+            toDestroy.GetComponent<NetworkObject>().Despawn();
+            spawnedFireBalls.RemoveAt(0); // Use RemoveAt for cleaner code
             Destroy(toDestroy);
- 
+        }
     }
 
 }
