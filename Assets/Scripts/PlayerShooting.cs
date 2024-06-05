@@ -8,14 +8,13 @@ public class PlayerShooting : NetworkBehaviour
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private Transform shootTransform;
 
-    [SerializeField] private List<GameObject> shootList = new List<GameObject>();
+    private List<GameObject> shootList = new List<GameObject>();
 
-    void Update()
+    private void Update()
     {
-        if (!IsOwner) return;
-        if (Input.GetKeyDown(KeyCode.E))
+        if (IsOwner && Input.GetKeyDown(KeyCode.E))
         {
-            Debug.Log("Spara");
+            Debug.Log("Shoot");
             ShootServerRpc();
         }
     }
@@ -23,11 +22,11 @@ public class PlayerShooting : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void ShootServerRpc()
     {
-        GameObject go = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
-        NetworkObject networkObject = go.GetComponent<NetworkObject>();
+        GameObject fireball = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
+        NetworkObject networkObject = fireball.GetComponent<NetworkObject>();
         networkObject.Spawn(true);
-        go.GetComponent<ProjectileMove>().parent = this;
-        shootList.Add(go);
+        fireball.GetComponent<ProjectileMove>().parent = this;
+        shootList.Add(fireball);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -42,4 +41,5 @@ public class PlayerShooting : NetworkBehaviour
             Destroy(toDestroy);
         }
     }
+
 }

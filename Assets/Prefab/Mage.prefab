@@ -753,7 +753,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d552e9c55465e4f43856fe9bd8ae44a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireball: {fileID: 1142682751626895652, guid: aecce0554039a442bbf184611b777087, type: 3}
+  fireballPrefab: {fileID: 1142682751626895652, guid: aecce0554039a442bbf184611b777087, type: 3}
   shootTransform: {fileID: 4432957948409221935}
   shootList: []
 --- !u!54 &6125416320624589879

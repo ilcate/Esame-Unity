@@ -6,7 +6,7 @@ using UnityEngine;
 public class ProjectileMove : NetworkBehaviour
 {
     public PlayerShooting parent;
-    [SerializeField] private float speed = 20f;
+    [SerializeField] private float speed = 40f;
     private Rigidbody rb;
 
     void Start()
@@ -40,9 +40,9 @@ public class ProjectileMove : NetworkBehaviour
         }
     }
 
-    void OnCollisionEnter(Collision collision)
+    /*void OnCollisionEnter(Collision collision)
     {
         if (!IsOwner) return;
         parent.DestroyServerRpc();
-    }
+    }*/
 }
