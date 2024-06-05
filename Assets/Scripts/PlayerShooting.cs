@@ -25,22 +25,21 @@ public class PlayerShooting : NetworkBehaviour
     {
         GameObject fireball = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
         NetworkObject networkObject = fireball.GetComponent<NetworkObject>();
-        networkObject.Spawn(true);
-        fireball.GetComponent<ProjectileMove>().parent = this;
+        networkObject.Spawn();
+        //fireball.GetComponent<ProjectileMove>().parent = this;
         shootList.Add(fireball);
     }
 
     [ServerRpc(RequireOwnership = false)]
     public void DestroyServerRpc()
     {
-        if (shootList.Count > 0)
-        {
+ 
             GameObject toDestroy = shootList[0];
             shootList.RemoveAt(0);
             NetworkObject networkObject = toDestroy.GetComponent<NetworkObject>();
-            networkObject.Despawn(true);
+            networkObject.Despawn();
             Destroy(toDestroy);
-        }
+ 
     }
 
 }
