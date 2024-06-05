@@ -19,7 +19,7 @@ public class PlayerShooting : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void ShootServerRpc()
     {
         GameObject go = Instantiate(fireball, shootTransform.position, shootTransform.rotation);
