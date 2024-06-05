@@ -27,6 +27,7 @@ public class PlayerShooting : NetworkBehaviour
         NetworkObject networkObject = fireball.GetComponent<NetworkObject>();
         networkObject.Spawn();
         //fireball.GetComponent<ProjectileMove>().parent = this;
+        //CIAO
         shootList.Add(fireball);
     }
 
