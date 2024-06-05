@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public class PlayerShooting : NetworkBehaviour
+public class PlayerShooting : MonoBehaviour
 {
     [SerializeField] private GameObject fireball;
     [SerializeField] private Transform shootTransform;
@@ -11,11 +11,12 @@ public class PlayerShooting : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!IsOwner) return;
-       if (Input.GetKeyDown(KeyCode.Mouse0))
+        //if (!IsOwner) return;
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            GameObject go = Instantiate(fireball, shootTransform.position, shootTransform.rotation);
-            go.GetComponent<NetworkObject>().Spawn();
+            //GameObject go =
+            //go.GetComponent<NetworkObject>().Spawn();
+            Instantiate(fireball, shootTransform.position, shootTransform.rotation);
         }
     }
 }
