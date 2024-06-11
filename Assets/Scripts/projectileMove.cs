@@ -82,6 +82,14 @@ public class ProjectileMove : NetworkBehaviour
             {
                 targetAnimator.SetTrigger("Die"); // Trigger death animation
             }
+            else
+            {
+                Debug.LogWarning("Animator component missing on target");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("PlayerMove component missing on target");
         }
 
         Debug.Log(collision.collider);
