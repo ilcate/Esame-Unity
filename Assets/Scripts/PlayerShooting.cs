@@ -12,6 +12,7 @@ public class PlayerShooting : NetworkBehaviour
     [SerializeField] private List<GameObject> spawnedFireBalls = new List<GameObject>();
 
     private PlayerMove playerMove; // Riferimento a PlayerMove
+    private Coroutine chargeCoroutine = null;
 
     private void Start()
     {
@@ -22,23 +23,41 @@ public class PlayerShooting : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        if (Input.GetKeyDown(KeyCode.E) && !playerMove.isCharging)
+        float rightStickHorizontal = Input.GetAxis("RightStickHorizontal");
+        float rightStickVertical = Input.GetAxis("RightStickVertical");
+
+        if (rightStickHorizontal != 0 || rightStickVertical != 0)
         {
-            StartCoroutine(ChargeAndShoot());
+            if (chargeCoroutine == null)
+            {
+                chargeCoroutine = StartCoroutine(ChargeAndShoot());
+            }
+        }
+        else
+        {
+            if (chargeCoroutine != null)
+            {
+                StopCoroutine(chargeCoroutine);
+                chargeCoroutine = null;
+                playerMove.isCharging = false;
+            }
         }
     }
 
     private IEnumerator ChargeAndShoot()
     {
         playerMove.isCharging = true; // Inizia il caricamento
-        yield return new WaitForSeconds(chargeTime); // Aspetta per il tempo di caricamento
+        float startTime = Time.time;
 
-        if (Input.GetKey(KeyCode.E)) // Controlla se il tasto è ancora premuto
+        while (Time.time - startTime < chargeTime)
         {
-            ShootServerRpc(); // Spara il colpo
+            yield return null;
         }
 
+        ShootServerRpc(); // Spara il colpo
+
         playerMove.isCharging = false; // Resetta lo stato di caricamento
+        chargeCoroutine = null;
     }
 
     [ServerRpc]
