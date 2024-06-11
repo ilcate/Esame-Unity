@@ -9,6 +9,7 @@ public class PlayerMove : NetworkBehaviour
     public float rotationSpeed = 360f;
     private static string passed;
     public bool isCharging = false; // Variabile per tenere traccia dello stato di caricamento
+    private bool isDisabled = false; // Variabile per tenere traccia se il player ? disabilitato
 
     Animator animator;
     public static PlayerMove Instance { get; private set; }
@@ -34,17 +35,17 @@ public class PlayerMove : NetworkBehaviour
 
     void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || isDisabled) return;
 
         if (isCharging)
         {
-            // Permetti solo la rotazione con l'analogico destro
-            float rightStickHorizontal = Input.GetAxis("RightStickHorizontal");
-            float rightStickVertical = Input.GetAxis("RightStickVertical");
+            // Permetti solo la rotazione con l'analogico sinistro
+            float moveHorizontal = Input.GetAxis("Horizontal");
+            float moveVertical = Input.GetAxis("Vertical");
 
-            if (rightStickHorizontal != 0 || rightStickVertical != 0)
+            if (moveHorizontal != 0 || moveVertical != 0)
             {
-                float targetAngle = Mathf.Atan2(rightStickHorizontal, rightStickVertical) * Mathf.Rad2Deg;
+                float targetAngle = Mathf.Atan2(moveHorizontal, moveVertical) * Mathf.Rad2Deg;
                 Quaternion targetRotation = Quaternion.Euler(0, targetAngle, 0);
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
@@ -72,5 +73,12 @@ public class PlayerMove : NetworkBehaviour
 
             rb.velocity = new Vector3(moveHorizontal, 0, moveVertical) * speed;
         }
+    }
+
+    public void DisableMovement()
+    {
+        isDisabled = true;
+        rb.velocity = Vector3.zero;
+        animator.SetBool("IsMoving", false);
     }
 }

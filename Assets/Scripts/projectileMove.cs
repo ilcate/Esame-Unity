@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
+using Unity.Netcode;
 
 public class ProjectileMove : NetworkBehaviour
 {
@@ -63,6 +63,19 @@ public class ProjectileMove : NetworkBehaviour
         {
             // Ignore the collision with the shooter 
             return;
+        }
+
+        // Check if the collision object is a player 
+        PlayerMove playerMove = collision.gameObject.GetComponent<PlayerMove>();
+        if (playerMove != null)
+        {
+            playerMove.DisableMovement();
+
+            PlayerShooting playerShooting = collision.gameObject.GetComponent<PlayerShooting>();
+            if (playerShooting != null)
+            {
+                playerShooting.DisableShooting();
+            }
         }
 
         Debug.Log(collision.collider);

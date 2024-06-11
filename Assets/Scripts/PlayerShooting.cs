@@ -7,12 +7,16 @@ public class PlayerShooting : NetworkBehaviour
 {
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private Transform shootTransform;
-    [SerializeField] private float chargeTime = 2.0f; // Tempo di caricamento
+    [SerializeField] private float chargeTime = 1.0f; // Tempo di caricamento
+    [SerializeField] private float maxChargeTime = 3.0f; // Tempo massimo di caricamento
 
     [SerializeField] private List<GameObject> spawnedFireBalls = new List<GameObject>();
 
     private PlayerMove playerMove; // Riferimento a PlayerMove
     private Coroutine chargeCoroutine = null;
+    private bool isChargingComplete = false;
+    private bool isMaxChargeComplete = false;
+    private bool isDisabled = false; // Variabile per tenere traccia se il player ? disabilitato
 
     private void Start()
     {
@@ -21,25 +25,30 @@ public class PlayerShooting : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || isDisabled) return;
 
-        float rightStickHorizontal = Input.GetAxis("RightStickHorizontal");
-        float rightStickVertical = Input.GetAxis("RightStickVertical");
-
-        if (rightStickHorizontal != 0 || rightStickVertical != 0)
+        if (Input.GetButtonDown("Fire1")) // Tasto quadrato
         {
             if (chargeCoroutine == null)
             {
                 chargeCoroutine = StartCoroutine(ChargeAndShoot());
             }
         }
-        else
+
+        if (Input.GetButtonUp("Fire1")) // Rilasciato il tasto quadrato
         {
             if (chargeCoroutine != null)
             {
                 StopCoroutine(chargeCoroutine);
                 chargeCoroutine = null;
                 playerMove.isCharging = false;
+            }
+
+            if (isChargingComplete)
+            {
+                ShootServerRpc();
+                isChargingComplete = false;
+                isMaxChargeComplete = false;
             }
         }
     }
@@ -49,14 +58,20 @@ public class PlayerShooting : NetworkBehaviour
         playerMove.isCharging = true; // Inizia il caricamento
         float startTime = Time.time;
 
-        while (Time.time - startTime < chargeTime)
+        while (Time.time - startTime < maxChargeTime)
         {
+            if (Time.time - startTime >= chargeTime && !isChargingComplete)
+            {
+                isChargingComplete = true;
+            }
             yield return null;
         }
 
-        ShootServerRpc(); // Spara il colpo
-
         playerMove.isCharging = false; // Resetta lo stato di caricamento
+        isMaxChargeComplete = true;
+        isChargingComplete = false;
+        ShootServerRpc(); // Spara automaticamente dopo maxChargeTime
+
         chargeCoroutine = null;
     }
 
@@ -71,6 +86,11 @@ public class PlayerShooting : NetworkBehaviour
         projectileMove.Initialize(shootTransform.forward);
 
         go.GetComponent<NetworkObject>().Spawn(true);
+    }
+
+    public void DisableShooting()
+    {
+        isDisabled = true;
     }
 
     [ServerRpc(RequireOwnership = false)]
