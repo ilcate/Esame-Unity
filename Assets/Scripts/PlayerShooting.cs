@@ -7,32 +7,51 @@ public class PlayerShooting : NetworkBehaviour
 {
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private Transform shootTransform;
+    [SerializeField] private float chargeTime = 2.0f; // Tempo di caricamento
 
     [SerializeField] private List<GameObject> spawnedFireBalls = new List<GameObject>();
+
+    private PlayerMove playerMove; // Riferimento a PlayerMove
+
+    private void Start()
+    {
+        playerMove = GetComponent<PlayerMove>(); // Ottieni il componente PlayerMove
+    }
 
     private void Update()
     {
         if (!IsOwner) return;
-        if (Input.GetKeyDown(KeyCode.E))
+
+        if (Input.GetKeyDown(KeyCode.E) && !playerMove.isCharging)
         {
-            ShootServerRpc();
+            StartCoroutine(ChargeAndShoot());
         }
+    }
+
+    private IEnumerator ChargeAndShoot()
+    {
+        playerMove.isCharging = true; // Inizia il caricamento
+        yield return new WaitForSeconds(chargeTime); // Aspetta per il tempo di caricamento
+
+        if (Input.GetKey(KeyCode.E)) // Controlla se il tasto è ancora premuto
+        {
+            ShootServerRpc(); // Spara il colpo
+        }
+
+        playerMove.isCharging = false; // Resetta lo stato di caricamento
     }
 
     [ServerRpc]
     private void ShootServerRpc()
     {
-        Debug.Log("Shoot");
         GameObject go = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
         spawnedFireBalls.Add(go);
 
-        // Set the parent reference and initial velocity 
         ProjectileMove projectileMove = go.GetComponent<ProjectileMove>();
         projectileMove.parent = this;
-        projectileMove.Initialize(shootTransform.forward);  // Initialize with the forward direction of the shoot transform 
+        projectileMove.Initialize(shootTransform.forward);
 
-        // Spawn the networked object 
-        go.GetComponent<NetworkObject>().Spawn(true); // Ensuring ownership is set correctly 
+        go.GetComponent<NetworkObject>().Spawn(true);
     }
 
     [ServerRpc(RequireOwnership = false)]
