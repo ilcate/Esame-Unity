@@ -8,8 +8,8 @@ public class PlayerMove : NetworkBehaviour
     public float speed = 10f;
     public float rotationSpeed = 360f;
     private static string passed;
-    public bool isCharging = false; // Variabile per tenere traccia dello stato di caricamento
-    private bool isDisabled = false; // Variabile per tenere traccia se il player ? disabilitato
+    public bool isCharging = false; // Variable to track charging state
+    private bool isDisabled = false; // Variable to track if the player is disabled
 
     Animator animator;
     public static PlayerMove Instance { get; private set; }
@@ -39,7 +39,7 @@ public class PlayerMove : NetworkBehaviour
 
         if (isCharging)
         {
-            // Permetti solo la rotazione con l'analogico sinistro
+            // Allow only rotation with the left analog stick
             float moveHorizontal = Input.GetAxis("Horizontal");
             float moveVertical = Input.GetAxis("Vertical");
 
@@ -51,11 +51,11 @@ public class PlayerMove : NetworkBehaviour
             }
 
             animator.SetBool("IsMoving", false);
-            rb.velocity = Vector3.zero; // Disabilita il movimento
+            rb.velocity = Vector3.zero; // Disable movement
         }
         else
         {
-            // Movimento normale con l'analogico sinistro
+            // Normal movement with the left analog stick
             float moveHorizontal = Input.GetAxis("Horizontal");
             float moveVertical = Input.GetAxis("Vertical");
 
@@ -80,5 +80,6 @@ public class PlayerMove : NetworkBehaviour
         isDisabled = true;
         rb.velocity = Vector3.zero;
         animator.SetBool("IsMoving", false);
+        animator.SetTrigger("Die"); // Trigger death animation
     }
 }

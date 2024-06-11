@@ -76,6 +76,12 @@ public class ProjectileMove : NetworkBehaviour
             {
                 playerShooting.DisableShooting();
             }
+
+            Animator targetAnimator = collision.gameObject.GetComponent<Animator>();
+            if (targetAnimator != null)
+            {
+                targetAnimator.SetTrigger("Die"); // Trigger death animation
+            }
         }
 
         Debug.Log(collision.collider);
