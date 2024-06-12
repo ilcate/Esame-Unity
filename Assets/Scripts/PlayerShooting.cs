@@ -84,6 +84,8 @@ public class PlayerShooting : NetworkBehaviour
     [ServerRpc]
     private void ShootServerRpc()
     {
+        if (isDisabled) return;
+
         GameObject go = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
         spawnedFireBalls.Add(go);
 
@@ -98,6 +100,11 @@ public class PlayerShooting : NetworkBehaviour
     public void DisableShooting()
     {
         isDisabled = true;
+    }
+
+    public void EnableShooting()
+    {
+        isDisabled = false;
     }
 
     [ServerRpc(RequireOwnership = false)]

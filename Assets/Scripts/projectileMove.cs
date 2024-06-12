@@ -56,7 +56,7 @@ public class ProjectileMove : NetworkBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (!IsOwner) return;
+        if (!IsServer) return;
 
         // Check if the collision object is the shooter 
         if (collision.gameObject == parent.gameObject)
@@ -70,21 +70,10 @@ public class ProjectileMove : NetworkBehaviour
         if (playerMove != null)
         {
             playerMove.DisableMovement();
-
             PlayerShooting playerShooting = collision.gameObject.GetComponent<PlayerShooting>();
             if (playerShooting != null)
             {
                 playerShooting.DisableShooting();
-            }
-
-            Animator targetAnimator = collision.gameObject.GetComponent<Animator>();
-            if (targetAnimator != null)
-            {
-                targetAnimator.SetTrigger("Die"); // Trigger death animation
-            }
-            else
-            {
-                Debug.LogWarning("Animator component missing on target");
             }
         }
         else
@@ -92,7 +81,6 @@ public class ProjectileMove : NetworkBehaviour
             Debug.LogWarning("PlayerMove component missing on target");
         }
 
-        Debug.Log(collision.collider);
         parent.DestroyServerRpc();
     }
 }

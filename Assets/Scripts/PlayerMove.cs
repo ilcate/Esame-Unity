@@ -9,7 +9,8 @@ public class PlayerMove : NetworkBehaviour
     public float rotationSpeed = 360f;
     private static string passed;
     public bool isCharging = false; // Variable to track charging state
-    private bool isDisabled = false; // Variable to track if the player is disabled
+
+    private NetworkVariable<bool> isDisabled = new NetworkVariable<bool>(false);
 
     Animator animator;
     public static PlayerMove Instance { get; private set; }
@@ -23,7 +24,7 @@ public class PlayerMove : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (!IsOwner) enabled = false;
+        if (!IsOwner) return;
         transform.position = new Vector3(0f, 0f, 0f);
     }
 
@@ -35,11 +36,20 @@ public class PlayerMove : NetworkBehaviour
 
     void Update()
     {
-        if (!IsOwner || isDisabled) return;
+        if (!IsOwner) return;
+
+        if (isDisabled.Value)
+        {
+            // Check for revival input
+            if (Input.GetKeyDown(KeyCode.R) || Input.GetButtonDown("Triangle"))
+            {
+                ReviveServerRpc();
+            }
+            return;
+        }
 
         if (isCharging)
         {
-            // Allow only rotation with the left analog stick
             float moveHorizontal = Input.GetAxis("Horizontal");
             float moveVertical = Input.GetAxis("Vertical");
 
@@ -51,11 +61,10 @@ public class PlayerMove : NetworkBehaviour
             }
 
             animator.SetBool("IsMoving", false);
-            rb.velocity = Vector3.zero; // Disable movement
+            rb.velocity = Vector3.zero;
         }
         else
         {
-            // Normal movement with the left analog stick
             float moveHorizontal = Input.GetAxis("Horizontal");
             float moveVertical = Input.GetAxis("Vertical");
 
@@ -77,9 +86,57 @@ public class PlayerMove : NetworkBehaviour
 
     public void DisableMovement()
     {
-        isDisabled = true;
+        if (IsServer)
+        {
+            isDisabled.Value = true;
+            rb.velocity = Vector3.zero;
+            animator.SetBool("IsMoving", false);
+            animator.SetTrigger("Die");
+            DisableClientRpc();
+        }
+        else
+        {
+            DisableMovementServerRpc();
+        }
+    }
+
+    [ServerRpc]
+    public void DisableMovementServerRpc()
+    {
+        isDisabled.Value = true;
         rb.velocity = Vector3.zero;
         animator.SetBool("IsMoving", false);
-        animator.SetTrigger("Die"); // Trigger death animation
+        animator.SetTrigger("Die");
+        DisableClientRpc();
+    }
+
+    [ClientRpc]
+    private void DisableClientRpc()
+    {
+        rb.velocity = Vector3.zero;
+        animator.SetBool("IsMoving", false);
+        animator.SetTrigger("Die");
+    }
+
+    [ServerRpc]
+    private void ReviveServerRpc()
+    {
+        isDisabled.Value = false;
+        ReviveClientRpc();
+    }
+
+    [ClientRpc]
+    private void ReviveClientRpc()
+    {
+        rb.velocity = Vector3.zero;
+        animator.ResetTrigger("Die");
+        animator.SetBool("IsMoving", false);
+
+        // Call EnableShooting on the PlayerShooting component
+        PlayerShooting playerShooting = GetComponent<PlayerShooting>();
+        if (playerShooting != null)
+        {
+            playerShooting.EnableShooting();
+        }
     }
 }
