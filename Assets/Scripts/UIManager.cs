@@ -84,11 +84,4 @@ public class UIManager : NetworkBehaviour
 
     }
 
-    //private void Update()
-    //{
-    //    PlayerDisplay.text = "Players: " + playersCount.Value.ToString();
-    //    if (!IsServer) return;
-    //    playersCount.Value = NetworkManager.Singleton.ConnectedClients.Count;
-       
-    //}
 }

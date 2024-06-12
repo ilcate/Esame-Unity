@@ -72,13 +72,13 @@ public class PlayerShooting : NetworkBehaviour
             yield return null;
         }
 
-        playerMove.isCharging = false; // Reset charging state
+        playerMove.isCharging = false; 
         isMaxChargeComplete = true;
         isChargingComplete = false;
-        ShootServerRpc(); // Automatically shoot after maxChargeTime
+        ShootServerRpc(); 
 
         chargeCoroutine = null;
-        animator.SetBool("IsCharging", false); // Stop charging animation
+        animator.SetBool("IsCharging", false); 
     }
 
     [ServerRpc]
