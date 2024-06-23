@@ -84,7 +84,8 @@ public class UIManager : NetworkBehaviour
            
              GameManager.Instance.StartGame();
              StartGameServerRpc();
-            
+             startGame.gameObject.SetActive(false);
+
         });
     }
 
@@ -92,5 +93,6 @@ public class UIManager : NetworkBehaviour
     private void StartGameServerRpc()
     {
         GameManager.Instance.StartGame();
+       
     }
 }
