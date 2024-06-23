@@ -28,7 +28,7 @@ public class ProjectileMove : NetworkBehaviour
     public void Initialize(Vector3 direction)
     {
         rb = GetComponent<Rigidbody>();
-        rb.velocity = direction * speed;
+        rb.velocity = direction * speed; 
 
         if (IsServer)
         {
@@ -48,6 +48,14 @@ public class ProjectileMove : NetworkBehaviour
         {
             transform.position = networkPosition.Value;
             rb.velocity = networkVelocity.Value;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        if (IsServer)
+        {
+            rb.MovePosition(rb.position + rb.velocity * Time.fixedDeltaTime);
         }
     }
 
@@ -80,6 +88,7 @@ public class ProjectileMove : NetworkBehaviour
             Debug.LogWarning("PlayerMove component missing on target");
         }
 
-        parent.DestroyServerRpc();
+        // Destroy the projectile after collision
+        Destroy(gameObject);
     }
 }

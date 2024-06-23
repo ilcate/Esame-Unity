@@ -72,7 +72,7 @@ public class PlayerShooting : NetworkBehaviour
     {
         if (isDisabled) return;
 
-        if (shootType != "Standard")
+        if (shootType == "Standard")
         {
             ShootProjectile(shootTransform.position, shootTransform.forward);
         }
@@ -84,11 +84,11 @@ public class PlayerShooting : NetworkBehaviour
             ShootProjectile(shootTransform.position, baseDirection);
 
             // Left spread projectile
-            Vector3 leftDirection = Quaternion.Euler(0, -30, 0) * baseDirection;
+            Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * baseDirection;
             ShootProjectile(shootTransform.position, leftDirection);
 
             // Right spread projectile
-            Vector3 rightDirection = Quaternion.Euler(0, 30, 0) * baseDirection;
+            Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * baseDirection;
             ShootProjectile(shootTransform.position, rightDirection);
         }
     }
