@@ -2,32 +2,85 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using System;
+using System.Threading.Tasks;
 
 public class PlayerMove : NetworkBehaviour
 {
     public float speed = 10f;
     public float rotationSpeed = 360f;
-    private static string passed;
     public bool isMoving = false;
     public bool isCharging = false;
 
     private NetworkVariable<bool> isDisabled = new NetworkVariable<bool>(false);
 
     Animator animator;
+
     public static PlayerMove Instance { get; private set; }
 
     Rigidbody rb;
 
-    public static void PassName(string inputUsername)
+    
+
+    private void Awake()
     {
-        passed = inputUsername;
+        Instance = this;
     }
 
     public override void OnNetworkSpawn()
     {
-        if (!IsOwner) return;
-        transform.position = new Vector3(0f, 0f, 0f);
+        Debug.Log(OwnerClientId);
+        switch (OwnerClientId)
+        {
+            case 0:
+                transform.position = new Vector3(110f, 0f, -15f);
+                break;
+            case 1:
+                transform.position = new Vector3(113f, 0f, -15f);
+                break;
+            case 2:
+                transform.position = new Vector3(115f, 0f, -15f);
+                break;
+            case 3:
+                transform.position = new Vector3(117f, 0f, -15f);
+                break;
+            default:
+                transform.position = new Vector3(115f, 0f, -13f);
+                break;
+        }
     }
+
+    [ClientRpc]
+    public void TpToMapClientRpc()
+    {
+        TpToMapClientRpcAsync(); 
+    }
+
+    private async Task TpToMapClientRpcAsync()
+    {
+        await GameManager.Instance.ActivateGameCam();
+
+        switch (OwnerClientId)
+        {
+            case 0:
+                transform.position = new Vector3(-25f, 0f, 16f);
+                break;
+            case 1:
+                transform.position = new Vector3(19f, 0f, -16f);
+                break;
+            case 2:
+                transform.position = new Vector3(19f, 0f, 14f);
+                break;
+            case 3:
+                transform.position = new Vector3(-25f, 0f, -19f);
+                break;
+            default:
+                transform.position = new Vector3(0f, 0f, 0f);
+                break;
+        }
+    }
+
+
 
     void Start()
     {

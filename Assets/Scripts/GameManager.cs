@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,20 +8,40 @@ public class GameManager : NetworkBehaviour
 
     public NetworkVariable<bool> inGame = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone);
 
-    public int randomValue;
+    private CameraManager cameraManager;
 
     private void Awake()
     {
-
-        randomValue = Random.Range(-10, 10);
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
-        
+    }
+
+    void Start()
+    {
+        cameraManager = FindObjectOfType<CameraManager>();
     }
 
     public void StartGame()
     {
         inGame.Value = true;
-        Debug.Log("Game started!");   
+        TeleportAllPlayers();
+        Debug.Log("Game started!");
+    }
+
+    private void TeleportAllPlayers()
+    {
+        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
+            if (playerMove != null)
+            {
+                playerMove.TpToMapClientRpc();
+            }
+        }
+    }
+
+    public Task ActivateGameCam()
+    {
+        return cameraManager.ActivateGameCam();
     }
 }

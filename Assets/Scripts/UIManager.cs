@@ -22,9 +22,6 @@ public class UIManager : NetworkBehaviour
     private TMP_InputField joinCodeInput;
 
     [SerializeField]
-    private TMP_InputField Username;
-
-    [SerializeField]
     private Button executePhysicsButton;
 
     [SerializeField]
@@ -40,7 +37,6 @@ public class UIManager : NetworkBehaviour
 
     void Start()
     {
-
         startGame.gameObject.SetActive(false);
 
         startHostButton?.onClick.AddListener(async () =>
@@ -57,8 +53,10 @@ public class UIManager : NetworkBehaviour
                 Debug.Log("Unable to start host...");
             }
 
-
             startGame.gameObject.SetActive(true);
+            startHostButton.gameObject.SetActive(false);
+            startClientButton.gameObject.SetActive(false);
+            joinCodeInput.gameObject.SetActive(false);
             CodeDisplay.text = RelayManager.Instance.code;
         });
 
@@ -77,22 +75,25 @@ public class UIManager : NetworkBehaviour
             }
 
             CodeDisplay.text = RelayManager.Instance.code;
+            startHostButton.gameObject.SetActive(false);
+            startClientButton.gameObject.SetActive(false);
+            joinCodeInput.gameObject.SetActive(false);
         });
 
         startGame?.onClick.AddListener(() =>
         {
-           
-             GameManager.Instance.StartGame();
-             StartGameServerRpc();
-             startGame.gameObject.SetActive(false);
-
+            GameManager.Instance.StartGame();
+            StartGameServerRpc();
+            startGame.gameObject.SetActive(false);
         });
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void StartGameServerRpc()
     {
         GameManager.Instance.StartGame();
-       
+        CodeDisplay.gameObject.SetActive(false);
     }
+
+    
 }

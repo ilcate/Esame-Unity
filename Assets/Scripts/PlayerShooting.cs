@@ -27,7 +27,7 @@ public class PlayerShooting : NetworkBehaviour
 
     private void Update()
     {
-        Debug.Log(GameManager.Instance.randomValue);
+
 
             if (!IsOwner || isDisabled) return;
 
