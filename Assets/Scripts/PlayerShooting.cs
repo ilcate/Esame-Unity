@@ -14,7 +14,8 @@ public class PlayerShooting : NetworkBehaviour
     private PlayerMove playerMove;
     private bool canShoot = true;
     private bool isDisabled = false;
-    
+
+
 
     private Animator animator;
 
@@ -26,35 +27,45 @@ public class PlayerShooting : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner || isDisabled) return;
+        Debug.Log(GameManager.Instance.randomValue);
+
+            if (!IsOwner || isDisabled) return;
 
 
-        if (Input.GetButtonDown("Fire1") && !playerMove.isMoving)
-        {
-            
-            animator.SetBool("IsCharging", true);
-            playerMove.isCharging = true;
-               
-
-        }
-
-        if (Input.GetButtonUp("Fire1"))
-        {
-
-            if (canShoot)
+            if (Input.GetButtonDown("Fire1") && !playerMove.isMoving)
             {
-                animator.SetTrigger("Shoot");
-                
+
+
+            if (GameManager.Instance.inGame.Value)
+            {
+                animator.SetBool("IsCharging", true);
+                playerMove.isCharging = true;
+            }
 
             }
-            canShoot = false;
 
-            playerMove.isCharging = false;
-            animator.SetBool("IsCharging", false);
-       
-            
+            if (Input.GetButtonUp("Fire1"))
+            {
 
-        }
+
+            if (GameManager.Instance.inGame.Value)
+            {
+                if (canShoot)
+                {
+                    animator.SetTrigger("Shoot");
+
+
+                }
+                canShoot = false;
+
+                playerMove.isCharging = false;
+                animator.SetBool("IsCharging", false);
+
+            }
+
+            }
+   
+      
     }
 
 

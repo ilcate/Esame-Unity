@@ -133,7 +133,6 @@ public class PlayerMove : NetworkBehaviour
         animator.ResetTrigger("Die");
         animator.SetBool("IsMoving", false);
 
-        // Call EnableShooting on the PlayerShooting component
         PlayerShooting playerShooting = GetComponent<PlayerShooting>();
         if (playerShooting != null)
         {

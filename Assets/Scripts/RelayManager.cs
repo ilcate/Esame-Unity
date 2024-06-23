@@ -1,4 +1,5 @@
 using DilmerGames.Core.Singletons;
+using Mono.Cecil.Cil;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -20,6 +21,8 @@ public class RelayManager : Singleton<RelayManager>
     public bool isRelayEnabled => Transport != null && Transport.Protocol == UnityTransport.ProtocolType.RelayUnityTransport;
      
     public UnityTransport Transport => NetworkManager.Singleton.gameObject.GetComponent<UnityTransport>();
+
+    public string code = "";
 
     public async Task<RelayHostData> SetupRelay()
     {
@@ -49,9 +52,12 @@ public class RelayManager : Singleton<RelayManager>
 
         relayHostData.JoinCode = await Relay.Instance.GetJoinCodeAsync(relayHostData.AllocationID);
 
+
         Transport.SetRelayServerData(relayHostData.IPv4Address, relayHostData.Port, relayHostData.AllocationIDBytes, relayHostData.Key, relayHostData.ConnectionData);
 
         Debug.Log($"GeneratedCode{relayHostData.JoinCode}");
+
+        code = relayHostData.JoinCode;
 
         return relayHostData;
     }
@@ -84,6 +90,8 @@ public class RelayManager : Singleton<RelayManager>
         Transport.SetRelayServerData(relayJoinData.IPv4Address, relayJoinData.Port, relayJoinData.AllocationIDBytes, relayJoinData.Key, relayJoinData.ConnectionData, relayJoinData.HostConnectionData);
 
         Debug.Log($"Joined with {joinCode}");
+
+        code = relayJoinData.JoinCode;
 
         return relayJoinData;
     }
