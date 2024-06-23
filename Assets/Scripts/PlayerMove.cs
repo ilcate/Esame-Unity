@@ -20,8 +20,6 @@ public class PlayerMove : NetworkBehaviour
 
     Rigidbody rb;
 
-    
-
     private void Awake()
     {
         Instance = this;
@@ -108,9 +106,18 @@ public class PlayerMove : NetworkBehaviour
         {
             if (moveHorizontal != 0 || moveVertical != 0)
             {
-                float targetAngle = Mathf.Atan2(moveHorizontal, moveVertical) * Mathf.Rad2Deg;
-                Quaternion targetRotation = Quaternion.Euler(0, targetAngle, 0);
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                float rotationDirection = 0;
+                if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+                {
+                    rotationDirection = -1;
+                }
+                else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
+                {
+                    rotationDirection = 1;
+                }
+
+                transform.Rotate(Vector3.up, rotationDirection * rotationSpeed * Time.deltaTime);
+             
                 isMoving = false;
             }
 

@@ -60,12 +60,8 @@ public class PlayerShooting : NetworkBehaviour
 
                 playerMove.isCharging = false;
                 animator.SetBool("IsCharging", false);
-
             }
-
-            }
-   
-      
+            }     
     }
 
 
