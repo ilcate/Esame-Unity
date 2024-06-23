@@ -8,6 +8,7 @@ public class ProjectileMove : NetworkBehaviour
     public PlayerShooting parent;
     [SerializeField] private float speed = 20f;
     private Rigidbody rb;
+    private Collider projectileCollider;
 
     private NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>();
     private NetworkVariable<Vector3> networkVelocity = new NetworkVariable<Vector3>();
@@ -15,6 +16,7 @@ public class ProjectileMove : NetworkBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        projectileCollider = GetComponent<Collider>();
 
         if (IsServer)
         {
@@ -54,6 +56,11 @@ public class ProjectileMove : NetworkBehaviour
         if (!IsServer) return;
 
         if (collision.gameObject == parent.gameObject)
+        {
+            return;
+        }
+
+        if (collision.gameObject.CompareTag("Projectile"))
         {
             return;
         }

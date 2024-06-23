@@ -82,7 +82,7 @@ public class UIManager : NetworkBehaviour
 
         startGame?.onClick.AddListener(() =>
         {
-            GameManager.Instance.StartGame();
+            
             StartGameServerRpc();
             startGame.gameObject.SetActive(false);
         });
