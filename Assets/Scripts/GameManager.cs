@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,6 +10,11 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<bool> inGame = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone);
 
     private CameraManager cameraManager;
+
+    public GameObject MultiShotPrefab;
+    public GameObject SplitShotPrefab;
+
+    private float secondsToWait = 20f;
 
     private void Awake()
     {
@@ -26,6 +32,9 @@ public class GameManager : NetworkBehaviour
         inGame.Value = true;
         TeleportAllPlayers();
         Debug.Log("Game started!");
+
+        Debug.Log("chiamata");
+        StartCoroutine(SpawnPowerUps());
     }
 
     private void TeleportAllPlayers()
@@ -43,5 +52,47 @@ public class GameManager : NetworkBehaviour
     public Task ActivateGameCam()
     {
         return cameraManager.ActivateGameCam();
+    }
+
+    private IEnumerator SpawnPowerUps()
+    {
+        while (inGame.Value)
+        {
+            yield return new WaitForSeconds(secondsToWait);
+
+            if (!inGame.Value)
+            {
+                yield break;
+            }
+
+            SpawnRandomPowerUpServerRpc();
+            secondsToWait = Random.Range(20f, 40f);
+        }
+    }
+
+    [ServerRpc]
+    private void SpawnRandomPowerUpServerRpc()
+    {
+        Vector3 spawnPosition = new Vector3(
+            Random.Range(-3f, 2.5f),
+            1f,
+            Random.Range(1f, -6f)
+        );
+
+        GameObject prefabToSpawn = Random.value > 0.5f ? MultiShotPrefab : SplitShotPrefab;
+        GameObject powerUp = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
+        powerUp.GetComponent<NetworkObject>().Spawn();
+
+        StartCoroutine(DestroyPowerUpAfterDelay(powerUp,  Random.Range(7f, 15f)));
+    }
+
+    private IEnumerator DestroyPowerUpAfterDelay(GameObject powerUp, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (powerUp != null && powerUp.GetComponent<NetworkObject>().IsSpawned)
+        {
+            powerUp.GetComponent<NetworkObject>().Despawn();
+            Destroy(powerUp);
+        }
     }
 }

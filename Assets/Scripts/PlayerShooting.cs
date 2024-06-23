@@ -16,6 +16,9 @@ public class PlayerShooting : NetworkBehaviour
     private bool isDisabled = false;
 
 
+    public string shootType = "Standard";
+
+
 
     private Animator animator;
 
@@ -68,22 +71,46 @@ public class PlayerShooting : NetworkBehaviour
       
     }
 
-
     [ServerRpc]
     private void ShootServerRpc()
     {
         if (isDisabled) return;
-        
-        GameObject go = Instantiate(fireballPrefab, shootTransform.position, shootTransform.rotation);
+
+        if (shootType != "Standard")
+        {
+            ShootProjectile(shootTransform.position, shootTransform.forward);
+        }
+        else
+        {
+            Vector3 baseDirection = shootTransform.forward;
+
+            // Central projectile
+            ShootProjectile(shootTransform.position, baseDirection);
+
+            // Left spread projectile
+            Vector3 leftDirection = Quaternion.Euler(0, -30, 0) * baseDirection;
+            ShootProjectile(shootTransform.position, leftDirection);
+
+            // Right spread projectile
+            Vector3 rightDirection = Quaternion.Euler(0, 30, 0) * baseDirection;
+            ShootProjectile(shootTransform.position, rightDirection);
+        }
+    }
+
+    private void ShootProjectile(Vector3 position, Vector3 direction)
+    {
+        Quaternion rotation = Quaternion.LookRotation(direction);
+        GameObject go = Instantiate(fireballPrefab, position, rotation);
         spawnedFireBalls.Add(go);
 
         ProjectileMove projectileMove = go.GetComponent<ProjectileMove>();
         projectileMove.parent = this;
-        projectileMove.Initialize(shootTransform.forward);
+        Debug.Log(direction);
+        projectileMove.Initialize(direction);
 
         go.GetComponent<NetworkObject>().Spawn(true);
-       
     }
+
 
     public void DisableShooting()
     {

@@ -12,6 +12,9 @@ public class PlayerMove : NetworkBehaviour
     public bool isMoving = false;
     public bool isCharging = false;
 
+
+   
+
     private NetworkVariable<bool> isDisabled = new NetworkVariable<bool>(false);
 
     Animator animator;
