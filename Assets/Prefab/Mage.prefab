@@ -585,6 +585,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mage
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 2255837369287497005, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}
@@ -672,7 +676,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 932260987
+  GlobalObjectIdHash: 4246506204
   InScenePlacedSourceGlobalObjectIdHash: 3367477853
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -833,6 +837,7 @@ MonoBehaviour:
   shootTransform: {fileID: 4432957948409221935}
   chargeTime: 1
   spawnedFireBalls: []
+  shootType: Standard
 --- !u!4 &9068353983566805502 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4f3aedbf62d874403b1ffb4245b439cf, type: 3}

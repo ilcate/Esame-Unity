@@ -83,6 +83,8 @@ public class GameManager : NetworkBehaviour
         GameObject powerUp = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
         powerUp.GetComponent<NetworkObject>().Spawn();
 
+        powerUp.GetComponent<PowerUp>().powerUpName = prefabToSpawn.name;
+
         StartCoroutine(DestroyPowerUpAfterDelay(powerUp,  Random.Range(7f, 15f)));
     }
 
