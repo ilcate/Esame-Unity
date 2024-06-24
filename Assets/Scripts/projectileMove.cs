@@ -88,7 +88,6 @@ public class ProjectileMove : NetworkBehaviour
             Debug.LogWarning("PlayerMove component missing on target");
         }
 
-        // Destroy the projectile after collision
-        Destroy(gameObject);
+        parent.DestroyServerRpc();
     }
 }
