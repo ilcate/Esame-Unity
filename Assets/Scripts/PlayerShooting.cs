@@ -1,7 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Globalization;
 using Unity.Netcode;
+using UnityEngine;
 
 public class PlayerShooting : NetworkBehaviour
 {
@@ -15,10 +15,7 @@ public class PlayerShooting : NetworkBehaviour
     private bool canShoot = true;
     private bool isDisabled = false;
 
-
-    public string shootType = "Standard";
-
-
+    public string shootType = "Standard"; // Default shoot type
 
     private Animator animator;
 
@@ -30,41 +27,31 @@ public class PlayerShooting : NetworkBehaviour
 
     private void Update()
     {
+        if (!IsOwner || isDisabled) return;
 
-
-            if (!IsOwner || isDisabled) return;
-
-
-            if (Input.GetButtonDown("Fire1") && !playerMove.isMoving)
-            {
-
-
+        if (Input.GetButtonDown("Fire1") && !playerMove.isMoving)
+        {
             if (GameManager.Instance.inGame.Value)
             {
                 animator.SetBool("IsCharging", true);
                 playerMove.isCharging = true;
             }
+        }
 
-            }
-
-            if (Input.GetButtonUp("Fire1"))
-            {
-
-
+        if (Input.GetButtonUp("Fire1"))
+        {
             if (GameManager.Instance.inGame.Value)
             {
                 if (canShoot)
                 {
                     animator.SetTrigger("Shoot");
-
-
                 }
                 canShoot = false;
 
                 playerMove.isCharging = false;
                 animator.SetBool("IsCharging", false);
             }
-            }     
+        }
     }
 
     [ServerRpc]
@@ -76,7 +63,7 @@ public class PlayerShooting : NetworkBehaviour
         {
             ShootProjectile(shootTransform.position, shootTransform.forward);
         }
-        else
+        else if (shootType == "Multishot")
         {
             Vector3 baseDirection = shootTransform.forward;
 
@@ -91,9 +78,13 @@ public class PlayerShooting : NetworkBehaviour
             Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * baseDirection;
             ShootProjectile(shootTransform.position, rightDirection);
         }
+        else if (shootType == "SplitShot")
+        {
+            ShootProjectile(shootTransform.position, shootTransform.forward, true);
+        }
     }
 
-    private void ShootProjectile(Vector3 position, Vector3 direction)
+    public void ShootProjectile(Vector3 position, Vector3 direction, bool isSplitShot = false)
     {
         Quaternion rotation = Quaternion.LookRotation(direction);
         GameObject go = Instantiate(fireballPrefab, position, rotation);
@@ -101,12 +92,12 @@ public class PlayerShooting : NetworkBehaviour
 
         ProjectileMove projectileMove = go.GetComponent<ProjectileMove>();
         projectileMove.parent = this;
+        projectileMove.isSplitShot = isSplitShot; // Set the flag for split shot
         Debug.Log(direction);
         projectileMove.Initialize(direction);
 
         go.GetComponent<NetworkObject>().Spawn(true);
     }
-
 
     public void DisableShooting()
     {
@@ -130,6 +121,11 @@ public class PlayerShooting : NetworkBehaviour
         }
     }
 
+    public void SetShootType(string newShootType)
+    {
+        shootType = newShootType;
+        Debug.Log($"Shoot type set to: {shootType}");
+    }
 
     private void CanShoot()
     {

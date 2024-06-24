@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3371437163
+  GlobalObjectIdHash: 750697635
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27a1cfa7ded27294ebec60cba8db6e57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powerUpName: 
+  powerUpName: MultiShot
 --- !u!1001 &9043787624473440004
 PrefabInstance:
   m_ObjectHideFlags: 0

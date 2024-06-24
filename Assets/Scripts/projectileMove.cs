@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using System;
 using Unity.Netcode;
+using UnityEngine;
 
 public class ProjectileMove : NetworkBehaviour
 {
@@ -12,6 +11,8 @@ public class ProjectileMove : NetworkBehaviour
 
     private NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>();
     private NetworkVariable<Vector3> networkVelocity = new NetworkVariable<Vector3>();
+
+    public bool isSplitShot = false;
 
     void Start()
     {
@@ -28,7 +29,7 @@ public class ProjectileMove : NetworkBehaviour
     public void Initialize(Vector3 direction)
     {
         rb = GetComponent<Rigidbody>();
-        rb.velocity = direction * speed; 
+        rb.velocity = direction * speed;
 
         if (IsServer)
         {
@@ -86,6 +87,15 @@ public class ProjectileMove : NetworkBehaviour
         else
         {
             Debug.LogWarning("PlayerMove component missing on target");
+        }
+
+        if (isSplitShot)
+        {
+            Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * rb.velocity.normalized;
+            Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * rb.velocity.normalized;
+
+            parent.ShootProjectile(transform.position, leftDirection);
+            parent.ShootProjectile(transform.position, rightDirection);
         }
 
         parent.DestroyServerRpc();

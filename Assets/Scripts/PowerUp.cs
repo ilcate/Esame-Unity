@@ -1,5 +1,5 @@
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 
 public class PowerUp : NetworkBehaviour
 {
@@ -23,6 +23,12 @@ public class PowerUp : NetworkBehaviour
         if (playerObject != null)
         {
             Debug.Log($"{playerObject.name} ha toccato il power-up {powerUpName}");
+
+            var playerShooting = playerObject.GetComponent<PlayerShooting>();
+            if (playerShooting != null)
+            {
+                playerShooting.SetShootType(powerUpName);
+            }
 
             Destroy(gameObject);
         }
