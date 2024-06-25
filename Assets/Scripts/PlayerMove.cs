@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using System;
 using System.Threading.Tasks;
 
 public class PlayerMove : NetworkBehaviour
@@ -13,6 +12,7 @@ public class PlayerMove : NetworkBehaviour
     public bool isCharging = false;
 
     public NetworkVariable<bool> isAlive = new NetworkVariable<bool>(true);
+
     private NetworkVariable<bool> isDisabled = new NetworkVariable<bool>(false);
 
     Animator animator;
@@ -23,63 +23,83 @@ public class PlayerMove : NetworkBehaviour
     private void Awake()
     {
         Instance = this;
-        animator = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody>();
     }
 
     public override void OnNetworkSpawn()
     {
         Debug.Log(OwnerClientId);
-        Vector3[] spawnPositions = {
-            new Vector3(110f, 0f, -15f),
-            new Vector3(113f, 0f, -15f),
-            new Vector3(115f, 0f, -15f),
-            new Vector3(117f, 0f, -15f),
-            new Vector3(115f, 0f, -13f) // Default spawn position
-        };
+        if (IsOwner)
+        {
+            SetInitialPosition();
+        }
+    }
 
-        transform.position = spawnPositions[OwnerClientId];
+    private void SetInitialPosition()
+    {
+        switch (OwnerClientId)
+        {
+            case 0:
+                transform.position = new Vector3(110f, 0f, -15f);
+                break;
+            case 1:
+                transform.position = new Vector3(113f, 0f, -15f);
+                break;
+            case 2:
+                transform.position = new Vector3(115f, 0f, -15f);
+                break;
+            case 3:
+                transform.position = new Vector3(117f, 0f, -15f);
+                break;
+            default:
+                transform.position = new Vector3(115f, 0f, -13f);
+                break;
+        }
     }
 
     [ClientRpc]
     public void TpToMapClientRpc()
     {
-        _ = TpToMapClientRpcAsync();
+        TpToMapClientRpcAsync();
     }
 
     private async Task TpToMapClientRpcAsync()
     {
         await GameManager.Instance.ActivateGameCam();
+        MovePlayers();
+    }
 
-        Vector3[] mapPositions = {
-            new Vector3(-25f, 0f, 16f),
-            new Vector3(19f, 0f, -16f),
-            new Vector3(19f, 0f, 14f),
-            new Vector3(-25f, 0f, -19f),
-            new Vector3(0f, 0f, 0f) // Default map position
-        };
+    private void MovePlayers()
+    {
+        switch (OwnerClientId)
+        {
+            case 0:
+                transform.position = new Vector3(-25f, 0f, 16f);
+                break;
+            case 1:
+                transform.position = new Vector3(19f, 0f, -16f);
+                break;
+            case 2:
+                transform.position = new Vector3(19f, 0f, 14f);
+                break;
+            case 3:
+                transform.position = new Vector3(-25f, 0f, -19f);
+                break;
+            default:
+                transform.position = new Vector3(0f, 0f, 0f);
+                break;
+        }
+    }
 
-        transform.position = mapPositions[OwnerClientId];
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || !isAlive.Value) return;
 
-        if (isDisabled.Value)
-        {
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                ReviveServerRpc();
-            }
-            return;
-        }
-
-        HandleMovement();
-    }
-
-    private void HandleMovement()
-    {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
 
@@ -98,10 +118,12 @@ public class PlayerMove : NetworkBehaviour
                 }
 
                 transform.Rotate(Vector3.up, rotationDirection * rotationSpeed * Time.deltaTime);
+
                 isMoving = false;
             }
 
             animator.SetBool("IsMoving", false);
+            isMoving = false;
             rb.velocity = Vector3.zero;
         }
         else
@@ -128,60 +150,39 @@ public class PlayerMove : NetworkBehaviour
     {
         if (IsServer)
         {
-            SetPlayerState(false);
-        }
-        else
-        {
-            DisableMovementServerRpc();
-        }
-    }
-
-    [ServerRpc]
-    public void DisableMovementServerRpc()
-    {
-        SetPlayerState(false);
-    }
-
-    private void SetPlayerState(bool alive)
-    {
-        isAlive.Value = alive;
-        rb.velocity = Vector3.zero;
-        animator.SetBool("IsMoving", false);
-        animator.SetBool("Die", !alive); 
-
-        if (!alive)
-        {
+            isAlive.Value = false;
+            rb.velocity = Vector3.zero;
+            animator.SetBool("IsMoving", false);
+            animator.SetBool("IsDead", true);
             DisableClientRpc();
-        }
-        else
-        {
-            ReviveClientRpc();
         }
     }
 
     [ClientRpc]
-    private void DisableClientRpc()
+    public void DisableClientRpc()
     {
         rb.velocity = Vector3.zero;
         animator.SetBool("IsMoving", false);
-        animator.SetBool("Die", true);
+        animator.SetBool("IsDead", true);
     }
 
     [ServerRpc(RequireOwnership = false)]
     public void ReviveServerRpc()
     {
-        isDisabled.Value = false;
-        SetPlayerState(true);
+        Debug.Log($"ReviveServerRpc called for client {OwnerClientId}");
+        isAlive.Value = true;
+        rb.velocity = Vector3.zero;
+        animator.SetBool("IsMoving", false);
+        animator.SetBool("IsDead", false);
+        TpToMapClientRpc();
     }
 
     [ClientRpc]
-    private void ReviveClientRpc()
+    public void ReviveClientRpc()
     {
+        Debug.Log($"ReviveClientRpc called for client {OwnerClientId}");
         rb.velocity = Vector3.zero;
         animator.SetBool("IsMoving", false);
-        _ = TpToMapClientRpcAsync();
-
-        PlayerShooting playerShooting = GetComponent<PlayerShooting>();
-        playerShooting?.EnableShooting();
+        animator.SetBool("IsDead", false);
     }
 }

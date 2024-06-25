@@ -2,7 +2,6 @@ using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
 using System.Threading.Tasks;
-using UnityEditor.Search;
 
 public class GameManager : NetworkBehaviour
 {
@@ -35,6 +34,31 @@ public class GameManager : NetworkBehaviour
         Debug.Log("Game started!");
 
         StartCoroutine(SpawnPowerUps());
+    }
+
+    public void RestartGame()
+    {
+        // Fermiamo il gioco attuale
+        inGame.Value = false;
+
+        // Fermiamo il respawn dei powerup
+        StopAllCoroutines();
+
+        // Riposizioniamo tutti i giocatori
+        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
+            if (playerMove != null)
+            {
+                playerMove.ReviveServerRpc();
+            }
+        }
+
+        // Resettiamo altre variabili di gioco se necessario
+        // Ad esempio, resettiamo il timer, il punteggio, ecc.
+
+        // Riavviamo il gioco
+        StartGame();
     }
 
     private void Update()
@@ -121,9 +145,7 @@ public class GameManager : NetworkBehaviour
         }
 
         UIManager.Instance.showRestart();
-
     }
-
 
     [ServerRpc]
     private void SpawnRandomPowerUpServerRpc()
@@ -153,3 +175,10 @@ public class GameManager : NetworkBehaviour
         }
     }
 }
+
+
+
+
+
+
+//il giocatore che respawna poi non può più sparare e la ui va fixata

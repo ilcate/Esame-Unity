@@ -75,9 +75,6 @@ public class ProjectileMove : NetworkBehaviour
     {
 
 
-        Debug.Log(IsHost);
-
-
         if (!IsServer) return;
 
         if (collision.gameObject == parent.gameObject)
