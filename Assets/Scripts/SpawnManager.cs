@@ -4,6 +4,7 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     public List<Transform> spawnPoints;
+    
 
     public Transform GetRandomSpawnPoint()
     {

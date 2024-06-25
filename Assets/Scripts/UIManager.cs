@@ -103,7 +103,7 @@ public class UIManager : NetworkBehaviour
 
         restartGame?.onClick.AddListener(() =>
         {
-            Debug.Log(restartGame);
+           PlayerMove.Instance.ReviveServerRpc();
         });
 
     }
@@ -124,7 +124,11 @@ public class UIManager : NetworkBehaviour
 
     public void showRestart()
     {
-        restartGame.gameObject.SetActive(true);
+        if (IsHost)
+        {
+            restartGame.gameObject.SetActive(true);
+  
+        }
     }
 
 

@@ -73,6 +73,11 @@ public class ProjectileMove : NetworkBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+
+
+        Debug.Log(IsHost);
+
+
         if (!IsServer) return;
 
         if (collision.gameObject == parent.gameObject)
@@ -84,6 +89,7 @@ public class ProjectileMove : NetworkBehaviour
         {
             return;
         }
+
 
         networkPosition.Value = transform.position;
         networkVelocity.Value = Vector3.zero;
