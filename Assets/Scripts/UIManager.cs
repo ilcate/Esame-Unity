@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 public class UIManager : NetworkBehaviour
 {
+
+    public static UIManager Instance { get; private set; }
+
     [SerializeField]
     private Button startServerButton;
 
@@ -27,17 +30,29 @@ public class UIManager : NetworkBehaviour
     [SerializeField]
     private TextMeshProUGUI CodeDisplay;
 
+
+    [SerializeField]
+    private TextMeshProUGUI WinOrLose;
+
+
+    [SerializeField]
+    private Button restartGame;
+
     [SerializeField]
     private Button startGame;
 
     private void Awake()
     {
+        Instance = this;
         Cursor.visible = true;
     }
+   
 
     void Start()
     {
         startGame.gameObject.SetActive(false);
+        restartGame.gameObject.SetActive(false);
+        WinOrLose.gameObject.SetActive(false);
 
         startHostButton?.onClick.AddListener(async () =>
         {
@@ -85,6 +100,12 @@ public class UIManager : NetworkBehaviour
             StartGameServerRpc();
             startGame.gameObject.SetActive(false);
         });
+
+        restartGame?.onClick.AddListener(() =>
+        {
+            Debug.Log(restartGame);
+        });
+
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -100,4 +121,23 @@ public class UIManager : NetworkBehaviour
     {
         CodeDisplay.gameObject.SetActive(false);
     }
+
+    public void showRestart()
+    {
+        restartGame.gameObject.SetActive(true);
+    }
+
+
+    public void displayLose()
+    {
+        WinOrLose.text = "You lose";
+        WinOrLose.gameObject.SetActive(true);
+    }
+
+    public void displayWin()
+    {
+        WinOrLose.text = "You win";
+        WinOrLose.gameObject.SetActive(true);
+    }
+
 }

@@ -11,10 +11,12 @@ public class PlayerMove : NetworkBehaviour
     public float rotationSpeed = 360f;
     public bool isMoving = false;
     public bool isCharging = false;
-    public bool isAlive = true;
 
 
-   
+    public NetworkVariable<bool> isAlive = new NetworkVariable<bool>(true);
+
+
+
 
     private NetworkVariable<bool> isDisabled = new NetworkVariable<bool>(false);
 
@@ -153,11 +155,10 @@ public class PlayerMove : NetworkBehaviour
     {
         if (IsServer)
         {
-            isDisabled.Value = true;
+            isAlive.Value = false;
             rb.velocity = Vector3.zero;
             animator.SetBool("IsMoving", false);
             animator.SetTrigger("Die");
-            isAlive = false;
             DisableClientRpc();
         }
         else
@@ -169,11 +170,10 @@ public class PlayerMove : NetworkBehaviour
     [ServerRpc]
     public void DisableMovementServerRpc()
     {
-        isDisabled.Value = true;
+        isAlive.Value = false;
         rb.velocity = Vector3.zero;
         animator.SetBool("IsMoving", false);
         animator.SetTrigger("Die");
-        isAlive = false;
         DisableClientRpc();
     }
 

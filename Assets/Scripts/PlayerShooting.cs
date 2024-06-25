@@ -8,7 +8,6 @@ public class PlayerShooting : NetworkBehaviour
 {
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private Transform shootTransform;
-    [SerializeField] private float chargeTime = 1.0f;
     [SerializeField] private List<GameObject> spawnedFireBalls = new List<GameObject>();
 
     private PlayerMove playerMove;

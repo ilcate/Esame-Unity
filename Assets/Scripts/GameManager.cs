@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
+using System.Collections;
+using System.Threading.Tasks;
+using UnityEditor.Search;
 
 public class GameManager : NetworkBehaviour
 {
@@ -33,10 +34,8 @@ public class GameManager : NetworkBehaviour
         TeleportAllPlayers();
         Debug.Log("Game started!");
 
-        Debug.Log("chiamata");
         StartCoroutine(SpawnPowerUps());
     }
-
 
     private void Update()
     {
@@ -76,7 +75,6 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-
     private void CheckPlayersAlive()
     {
         if (!IsServer) return;
@@ -87,7 +85,7 @@ public class GameManager : NetworkBehaviour
             foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
             {
                 var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
-                if (playerMove != null && playerMove.isAlive)
+                if (playerMove != null && playerMove.isAlive.Value)
                 {
                     aliveCount++;
                 }
@@ -95,24 +93,34 @@ public class GameManager : NetworkBehaviour
 
             if (aliveCount <= 1)
             {
-                PauseGameClientRpc();
+                foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+                {
+                    var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
+                    if (playerMove != null)
+                    {
+                        SendVictoryOrDefeatClientRpc(playerMove.OwnerClientId, playerMove.isAlive.Value);
+                    }
+                }
             }
-        }  
+        }
     }
 
     [ClientRpc]
-    private void PauseGameClientRpc()
+    private void SendVictoryOrDefeatClientRpc(ulong clientId, bool isAlive)
     {
-        if (PlayerMove.Instance.isAlive)
+        if (NetworkManager.Singleton.LocalClientId == clientId)
         {
-            Debug.Log(PlayerMove.Instance);
-            Debug.Log("hai vinto");
+            if (isAlive)
+            {
+                UIManager.Instance.displayWin();
+            }
+            else
+            {
+                UIManager.Instance.displayLose();
+            }
         }
-        else
-        {
-            Debug.Log("hai perso");
-        }
-       
+
+        UIManager.Instance.showRestart();
 
     }
 
@@ -132,7 +140,7 @@ public class GameManager : NetworkBehaviour
 
         powerUp.GetComponent<PowerUp>().powerUpName = prefabToSpawn.name;
 
-        StartCoroutine(DestroyPowerUpAfterDelay(powerUp,  Random.Range(7f, 15f)));
+        StartCoroutine(DestroyPowerUpAfterDelay(powerUp, Random.Range(7f, 15f)));
     }
 
     private IEnumerator DestroyPowerUpAfterDelay(GameObject powerUp, float delay)
