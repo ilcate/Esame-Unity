@@ -79,13 +79,13 @@ public class PlayerShooting : NetworkBehaviour
             Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * baseDirection;
             ShootProjectile(shootTransform.position, rightDirection);
         }
-        else if (shootType == "SplitShot")
+        else if (shootType == "BounceShot")
         {
             ShootProjectile(shootTransform.position, shootTransform.forward, true);
         }
     }
 
-    public void ShootProjectile(Vector3 position, Vector3 direction, bool isSplitShot = false)
+    public void ShootProjectile(Vector3 position, Vector3 direction, bool isBounceShot = false)
     {
         Quaternion rotation = Quaternion.LookRotation(direction);
         GameObject go = Instantiate(fireballPrefab, position, rotation);
@@ -93,7 +93,7 @@ public class PlayerShooting : NetworkBehaviour
 
         ProjectileMove projectileMove = go.GetComponent<ProjectileMove>();
         projectileMove.parent = this;
-        projectileMove.isSplitShot = isSplitShot;
+        projectileMove.isBounceShot = isBounceShot;
         projectileMove.Initialize(direction);
 
         go.GetComponent<NetworkObject>().Spawn(true);

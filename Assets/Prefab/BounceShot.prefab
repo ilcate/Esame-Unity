@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -3474177048209023061}
   - component: {fileID: 2347409281983799212}
   m_Layer: 0
-  m_Name: SplitShot
+  m_Name: BounceShot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27a1cfa7ded27294ebec60cba8db6e57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powerUpName: SplitShot
+  powerUpName: BounceShot
 --- !u!1001 &5985495748237593492
 PrefabInstance:
   m_ObjectHideFlags: 0

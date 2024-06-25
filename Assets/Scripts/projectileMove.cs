@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -12,9 +13,11 @@ public class ProjectileMove : NetworkBehaviour
     private NetworkVariable<Vector3> networkVelocity = new NetworkVariable<Vector3>(writePerm: NetworkVariableWritePermission.Server);
 
     public bool isSplitShot = false;
+    public bool isBounceShot = false;
+    private int remainingBounces = 3;
+    private float bounceAngle = 45f;  
 
     public float lastSyncTime = 0f;
-
     private float syncInterval = 0.1f;
 
     void Start()
@@ -59,6 +62,7 @@ public class ProjectileMove : NetworkBehaviour
             rb.velocity = Vector3.Lerp(rb.velocity, networkVelocity.Value, interpolationFactor);
         }
     }
+
     void FixedUpdate()
     {
         if (IsServer)
@@ -69,7 +73,6 @@ public class ProjectileMove : NetworkBehaviour
             networkVelocity.Value = rb.velocity;
         }
     }
-
 
     void OnCollisionEnter(Collision collision)
     {
@@ -95,24 +98,25 @@ public class ProjectileMove : NetworkBehaviour
         if (playerMove != null)
         {
             playerMove.DisableMovement();
-            
+
             PlayerShooting playerShooting = collision.gameObject.GetComponent<PlayerShooting>();
             if (playerShooting != null)
             {
                 playerShooting.DisableShooting();
-
             }
         }
 
-        if (isSplitShot)
+        if (isBounceShot && remainingBounces > 0)
         {
-            Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * rb.velocity.normalized;
-            Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * rb.velocity.normalized;
-
-            parent.ShootProjectile(transform.position, leftDirection);
-            parent.ShootProjectile(transform.position, rightDirection);
+            remainingBounces--;
+            Vector3 reflectDirection = Vector3.Reflect(rb.velocity.normalized, collision.contacts[0].normal);
+            reflectDirection = Quaternion.Euler(0, bounceAngle, 0) * reflectDirection;
+            rb.velocity = reflectDirection * speed;
+            networkVelocity.Value = rb.velocity;
         }
-
-        parent.DestroyServerRpc();
+        else
+        {
+            parent.DestroyServerRpc();
+        }
     }
 }
