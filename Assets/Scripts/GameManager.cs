@@ -37,6 +37,12 @@ public class GameManager : NetworkBehaviour
         StartCoroutine(SpawnPowerUps());
     }
 
+
+    private void Update()
+    {
+        CheckPlayersAlive();
+    }
+
     private void TeleportAllPlayers()
     {
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
@@ -69,6 +75,47 @@ public class GameManager : NetworkBehaviour
             secondsToWait = Random.Range(20f, 40f);
         }
     }
+
+
+    private void CheckPlayersAlive()
+    {
+        if (!IsServer) return;
+
+        if (inGame.Value)
+        {
+            int aliveCount = 0;
+            foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+            {
+                var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
+                if (playerMove != null && playerMove.isAlive)
+                {
+                    aliveCount++;
+                }
+            }
+
+            if (aliveCount <= 1)
+            {
+                PauseGameClientRpc();
+            }
+        }  
+    }
+
+    [ClientRpc]
+    private void PauseGameClientRpc()
+    {
+        if (PlayerMove.Instance.isAlive)
+        {
+            Debug.Log(PlayerMove.Instance);
+            Debug.Log("hai vinto");
+        }
+        else
+        {
+            Debug.Log("hai perso");
+        }
+       
+
+    }
+
 
     [ServerRpc]
     private void SpawnRandomPowerUpServerRpc()

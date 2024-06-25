@@ -11,6 +11,7 @@ public class PlayerMove : NetworkBehaviour
     public float rotationSpeed = 360f;
     public bool isMoving = false;
     public bool isCharging = false;
+    public bool isAlive = true;
 
 
    
@@ -156,6 +157,7 @@ public class PlayerMove : NetworkBehaviour
             rb.velocity = Vector3.zero;
             animator.SetBool("IsMoving", false);
             animator.SetTrigger("Die");
+            isAlive = false;
             DisableClientRpc();
         }
         else
@@ -171,6 +173,7 @@ public class PlayerMove : NetworkBehaviour
         rb.velocity = Vector3.zero;
         animator.SetBool("IsMoving", false);
         animator.SetTrigger("Die");
+        isAlive = false;
         DisableClientRpc();
     }
 
