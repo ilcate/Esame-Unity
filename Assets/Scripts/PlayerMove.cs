@@ -11,6 +11,7 @@ public class PlayerMove : NetworkBehaviour
     public float rotationSpeed = 360f;
     public bool isMoving = false;
     public bool isCharging = false;
+    public bool isAlive = true;
 
 
    
@@ -156,6 +157,7 @@ public class PlayerMove : NetworkBehaviour
             rb.velocity = Vector3.zero;
             animator.SetBool("IsMoving", false);
             animator.SetTrigger("Die");
+            isAlive = false;
             DisableClientRpc();
         }
         else
@@ -171,6 +173,7 @@ public class PlayerMove : NetworkBehaviour
         rb.velocity = Vector3.zero;
         animator.SetBool("IsMoving", false);
         animator.SetTrigger("Die");
+        isAlive = false;
         DisableClientRpc();
     }
 
@@ -186,8 +189,7 @@ public class PlayerMove : NetworkBehaviour
     private void ReviveServerRpc()
     {
         isDisabled.Value = false;
-        animator.SetBool("IsMoving", true);
-        StartCoroutine(RespawnPlayer());
+        
         ReviveClientRpc();
     }
 
@@ -196,7 +198,7 @@ public class PlayerMove : NetworkBehaviour
     {
         rb.velocity = Vector3.zero;
         animator.ResetTrigger("Die");
-        animator.SetBool("IsMoving", true);
+        StartCoroutine(RespawnPlayer());
 
         PlayerShooting playerShooting = GetComponent<PlayerShooting>();
         if (playerShooting != null)
@@ -207,7 +209,7 @@ public class PlayerMove : NetworkBehaviour
 
     private IEnumerator RespawnPlayer()
     {
-        yield return new WaitForSeconds(5); // Wait for 5 seconds before respawning
+        yield return new WaitForSeconds(5); 
 
         Transform spawnPoint = FindObjectOfType<SpawnManager>().GetRandomSpawnPoint();
         transform.position = spawnPoint.position;
