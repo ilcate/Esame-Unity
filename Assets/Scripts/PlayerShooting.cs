@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using System.Threading.Tasks;
+using System.Collections;
 
 public class PlayerShooting : NetworkBehaviour
 {
@@ -112,6 +114,16 @@ public class PlayerShooting : NetworkBehaviour
     public void DestroyServerRpc()
     {
         if (spawnedFireBalls.Count > 0)
+        {
+            StartCoroutine(DestroyAfterDelay(0.27f)); 
+        }
+    }
+
+    private IEnumerator DestroyAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay); 
+
+        if (spawnedFireBalls.Count > 0) 
         {
             GameObject toDestroy = spawnedFireBalls[0];
             toDestroy.GetComponent<NetworkObject>().Despawn();

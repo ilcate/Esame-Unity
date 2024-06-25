@@ -13,8 +13,9 @@ public class ProjectileMove : NetworkBehaviour
 
     public bool isSplitShot = false;
 
-    private float syncInterval = 1f; 
-    private float lastSyncTime = 0f;
+    public float lastSyncTime = 0f;
+
+    private float syncInterval = 0.1f;
 
     void Start()
     {
@@ -53,18 +54,22 @@ public class ProjectileMove : NetworkBehaviour
         }
         else
         {
-            transform.position = Vector3.Lerp(transform.position, networkPosition.Value, Time.deltaTime * 10f);
-            rb.velocity = Vector3.Lerp(rb.velocity, networkVelocity.Value, Time.deltaTime * 10f);
+            float interpolationFactor = (Time.time - lastSyncTime) / syncInterval;
+            transform.position = Vector3.Lerp(transform.position, networkPosition.Value, interpolationFactor);
+            rb.velocity = Vector3.Lerp(rb.velocity, networkVelocity.Value, interpolationFactor);
         }
     }
-
     void FixedUpdate()
     {
         if (IsServer)
         {
             rb.MovePosition(rb.position + rb.velocity * Time.fixedDeltaTime);
+
+            networkPosition.Value = rb.position;
+            networkVelocity.Value = rb.velocity;
         }
     }
+
 
     void OnCollisionEnter(Collision collision)
     {
@@ -79,6 +84,9 @@ public class ProjectileMove : NetworkBehaviour
         {
             return;
         }
+
+        networkPosition.Value = transform.position;
+        networkVelocity.Value = Vector3.zero;
 
         PlayerMove playerMove = collision.gameObject.GetComponent<PlayerMove>();
         if (playerMove != null)
