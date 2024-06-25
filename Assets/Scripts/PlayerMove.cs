@@ -187,6 +187,7 @@ public class PlayerMove : NetworkBehaviour
     {
         isDisabled.Value = false;
         animator.SetBool("IsMoving", true);
+        StartCoroutine(RespawnPlayer());
         ReviveClientRpc();
     }
 
@@ -203,4 +204,14 @@ public class PlayerMove : NetworkBehaviour
             playerShooting.EnableShooting();
         }
     }
+
+    private IEnumerator RespawnPlayer()
+    {
+        yield return new WaitForSeconds(5); // Wait for 5 seconds before respawning
+
+        Transform spawnPoint = FindObjectOfType<SpawnManager>().GetRandomSpawnPoint();
+        transform.position = spawnPoint.position;
+        transform.rotation = spawnPoint.rotation;
+    }
+
 }
