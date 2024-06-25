@@ -1,18 +1,17 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public List<Transform> spawnPoints;
 
-    // Update is called once per frame
-    void Update()
+    public Transform GetRandomSpawnPoint()
     {
-        
+        if (spawnPoints.Count == 0)
+        {
+            Debug.LogError("No spawn points set.");
+            return null;
+        }
+        return spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Count)];
     }
 }
