@@ -82,7 +82,6 @@ public class UIManager : NetworkBehaviour
 
         startGame?.onClick.AddListener(() =>
         {
-            
             StartGameServerRpc();
             startGame.gameObject.SetActive(false);
         });
@@ -91,9 +90,14 @@ public class UIManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void StartGameServerRpc()
     {
-        GameManager.Instance.StartGame();
         CodeDisplay.gameObject.SetActive(false);
+        StartGameClientRpc();
+        GameManager.Instance.StartGame();
     }
 
-    
+    [ClientRpc]
+    private void StartGameClientRpc()
+    {
+        CodeDisplay.gameObject.SetActive(false);
+    }
 }
