@@ -1,4 +1,3 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,10 +8,13 @@ public class ProjectileMove : NetworkBehaviour
     private Rigidbody rb;
     private Collider projectileCollider;
 
-    private NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>();
-    private NetworkVariable<Vector3> networkVelocity = new NetworkVariable<Vector3>();
+    private NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>(writePerm: NetworkVariableWritePermission.Server);
+    private NetworkVariable<Vector3> networkVelocity = new NetworkVariable<Vector3>(writePerm: NetworkVariableWritePermission.Server);
 
     public bool isSplitShot = false;
+
+    private float syncInterval = 1f; 
+    private float lastSyncTime = 0f;
 
     void Start()
     {
@@ -42,13 +44,17 @@ public class ProjectileMove : NetworkBehaviour
     {
         if (IsServer)
         {
-            networkPosition.Value = transform.position;
-            networkVelocity.Value = rb.velocity;
+            if (Time.time - lastSyncTime > syncInterval)
+            {
+                networkPosition.Value = transform.position;
+                networkVelocity.Value = rb.velocity;
+                lastSyncTime = Time.time;
+            }
         }
         else
         {
-            transform.position = networkPosition.Value;
-            rb.velocity = networkVelocity.Value;
+            transform.position = Vector3.Lerp(transform.position, networkPosition.Value, Time.deltaTime * 10f);
+            rb.velocity = Vector3.Lerp(rb.velocity, networkVelocity.Value, Time.deltaTime * 10f);
         }
     }
 
@@ -84,7 +90,6 @@ public class ProjectileMove : NetworkBehaviour
                 playerShooting.DisableShooting();
             }
         }
-      
 
         if (isSplitShot)
         {

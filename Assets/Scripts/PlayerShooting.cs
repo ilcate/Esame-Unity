@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Globalization;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,14 +7,13 @@ public class PlayerShooting : NetworkBehaviour
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private Transform shootTransform;
     [SerializeField] private float chargeTime = 1.0f;
-
     [SerializeField] private List<GameObject> spawnedFireBalls = new List<GameObject>();
 
     private PlayerMove playerMove;
     private bool canShoot = true;
     private bool isDisabled = false;
 
-    public string shootType = "Standard"; 
+    public string shootType = "Standard";
 
     private Animator animator;
 
@@ -54,8 +52,6 @@ public class PlayerShooting : NetworkBehaviour
         }
     }
 
-
-
     public void OnShootAnimationEvent()
     {
         if (IsOwner)
@@ -69,33 +65,24 @@ public class PlayerShooting : NetworkBehaviour
     {
         if (isDisabled) return;
 
-        
-            if (shootType == "Standard")
-            {
-                ShootProjectile(shootTransform.position, shootTransform.forward);
-            }
-            else if (shootType == "MultiShot")
-            {
-                Vector3 baseDirection = shootTransform.forward;
-                ShootProjectile(shootTransform.position, baseDirection);
-                Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * baseDirection;
-                ShootProjectile(shootTransform.position, leftDirection);
-
-                Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * baseDirection;
-                ShootProjectile(shootTransform.position, rightDirection);
-            }
-            else if (shootType == "SplitShot")
-            {
-                ShootProjectile(shootTransform.position, shootTransform.forward, true);
-            }
-        
-        
+        if (shootType == "Standard")
+        {
+            ShootProjectile(shootTransform.position, shootTransform.forward);
+        }
+        else if (shootType == "MultiShot")
+        {
+            Vector3 baseDirection = shootTransform.forward;
+            ShootProjectile(shootTransform.position, baseDirection);
+            Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * baseDirection;
+            ShootProjectile(shootTransform.position, leftDirection);
+            Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * baseDirection;
+            ShootProjectile(shootTransform.position, rightDirection);
+        }
+        else if (shootType == "SplitShot")
+        {
+            ShootProjectile(shootTransform.position, shootTransform.forward, true);
+        }
     }
-
-
-
-
-
 
     public void ShootProjectile(Vector3 position, Vector3 direction, bool isSplitShot = false)
     {
@@ -106,7 +93,6 @@ public class PlayerShooting : NetworkBehaviour
         ProjectileMove projectileMove = go.GetComponent<ProjectileMove>();
         projectileMove.parent = this;
         projectileMove.isSplitShot = isSplitShot;
-        Debug.Log(direction);
         projectileMove.Initialize(direction);
 
         go.GetComponent<NetworkObject>().Spawn(true);
