@@ -88,6 +88,7 @@ public class ProjectileMove : NetworkBehaviour
             if (playerShooting != null)
             {
                 playerShooting.DisableShooting();
+
             }
         }
 
