@@ -84,10 +84,7 @@ public class ProjectileMove : NetworkBehaviour
                 playerShooting.DisableShooting();
             }
         }
-        else
-        {
-            Debug.LogWarning("PlayerMove component missing on target");
-        }
+      
 
         if (isSplitShot)
         {

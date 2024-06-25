@@ -95,7 +95,7 @@ public class PlayerMove : NetworkBehaviour
 
         if (isDisabled.Value)
         {
-            if (Input.GetKeyDown(KeyCode.R) || Input.GetButtonDown("Triangle"))
+            if (Input.GetKeyDown(KeyCode.R))
             {
                 ReviveServerRpc();
             }
@@ -186,6 +186,7 @@ public class PlayerMove : NetworkBehaviour
     private void ReviveServerRpc()
     {
         isDisabled.Value = false;
+        animator.SetBool("IsMoving", true);
         ReviveClientRpc();
     }
 
@@ -194,7 +195,7 @@ public class PlayerMove : NetworkBehaviour
     {
         rb.velocity = Vector3.zero;
         animator.ResetTrigger("Die");
-        animator.SetBool("IsMoving", false);
+        animator.SetBool("IsMoving", true);
 
         PlayerShooting playerShooting = GetComponent<PlayerShooting>();
         if (playerShooting != null)

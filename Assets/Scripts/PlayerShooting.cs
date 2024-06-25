@@ -15,7 +15,7 @@ public class PlayerShooting : NetworkBehaviour
     private bool canShoot = true;
     private bool isDisabled = false;
 
-    public string shootType = "Standard"; // Default shoot type
+    public string shootType = "Standard"; 
 
     private Animator animator;
 
@@ -54,35 +54,48 @@ public class PlayerShooting : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
-    private void ShootServerRpc()
+
+
+    public void OnShootAnimationEvent()
+    {
+        if (IsOwner)
+        {
+            ShootServerRpc();
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void ShootServerRpc()
     {
         if (isDisabled) return;
 
-        if (shootType == "Standard")
-        {
-            ShootProjectile(shootTransform.position, shootTransform.forward);
-        }
-        else if (shootType == "Multishot")
-        {
-            Vector3 baseDirection = shootTransform.forward;
+        
+            if (shootType == "Standard")
+            {
+                ShootProjectile(shootTransform.position, shootTransform.forward);
+            }
+            else if (shootType == "MultiShot")
+            {
+                Vector3 baseDirection = shootTransform.forward;
+                ShootProjectile(shootTransform.position, baseDirection);
+                Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * baseDirection;
+                ShootProjectile(shootTransform.position, leftDirection);
 
-            // Central projectile
-            ShootProjectile(shootTransform.position, baseDirection);
-
-            // Left spread projectile
-            Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * baseDirection;
-            ShootProjectile(shootTransform.position, leftDirection);
-
-            // Right spread projectile
-            Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * baseDirection;
-            ShootProjectile(shootTransform.position, rightDirection);
-        }
-        else if (shootType == "SplitShot")
-        {
-            ShootProjectile(shootTransform.position, shootTransform.forward, true);
-        }
+                Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * baseDirection;
+                ShootProjectile(shootTransform.position, rightDirection);
+            }
+            else if (shootType == "SplitShot")
+            {
+                ShootProjectile(shootTransform.position, shootTransform.forward, true);
+            }
+        
+        
     }
+
+
+
+
+
 
     public void ShootProjectile(Vector3 position, Vector3 direction, bool isSplitShot = false)
     {
@@ -92,7 +105,7 @@ public class PlayerShooting : NetworkBehaviour
 
         ProjectileMove projectileMove = go.GetComponent<ProjectileMove>();
         projectileMove.parent = this;
-        projectileMove.isSplitShot = isSplitShot; // Set the flag for split shot
+        projectileMove.isSplitShot = isSplitShot;
         Debug.Log(direction);
         projectileMove.Initialize(direction);
 

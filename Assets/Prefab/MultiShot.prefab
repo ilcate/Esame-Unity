@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 7706856261892545949}
   - component: {fileID: 1622134948837391713}
   m_Layer: 0
-  m_Name: MultyShots
+  m_Name: MultiShot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
