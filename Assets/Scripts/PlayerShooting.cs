@@ -14,10 +14,11 @@ public class PlayerShooting : NetworkBehaviour
     public bool canShoot = true;
     private bool isDisabled = false;
 
-    public PhysicMaterial material;
+    public PhysicMaterial materialBouncy;
+
 
     public string shootType = "Standard";
-    private NetworkVariable<int> ammo = new NetworkVariable<int>(0);
+    public NetworkVariable<int> ammo = new NetworkVariable<int>(0);
 
     private Animator animator;
 
@@ -39,14 +40,18 @@ public class PlayerShooting : NetworkBehaviour
 
         if (Input.GetButtonUp("Fire1"))
         {
-            if (canShoot)
-            {
-                animator.SetTrigger("Shoot");
-            }
-            canShoot = false;
+
 
             playerMove.isCharging = false;
             animator.SetBool("IsCharging", false);
+
+            if (canShoot)
+            {
+                animator.SetTrigger("Shoot");
+
+            }
+            canShoot = false;
+
         }
     }
 
@@ -63,10 +68,13 @@ public class PlayerShooting : NetworkBehaviour
     {
         if (isDisabled) return;
 
-        fireballPrefab.GetComponent<Collider>().material = null;
         if (shootType == "BounceShot")
         {
-            fireballPrefab.GetComponent<Collider>().material = material;
+            fireballPrefab.GetComponent<Collider>().material = materialBouncy;
+        }
+        else
+        {
+            fireballPrefab.GetComponent<Collider>().material = null;
         }
 
         if (shootType == "Standard")
@@ -80,7 +88,6 @@ public class PlayerShooting : NetworkBehaviour
 
             if (shootType == "MultiShot")
             {
-
                 Vector3 baseDirection = shootTransform.forward;
                 ShootProjectile(shootTransform.position, baseDirection);
                 Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * baseDirection;
@@ -92,7 +99,6 @@ public class PlayerShooting : NetworkBehaviour
             {
                 ShootProjectile(shootTransform.position, shootTransform.forward, true);
             }
-
         }
 
         if (ammo.Value <= 0)
@@ -101,7 +107,10 @@ public class PlayerShooting : NetworkBehaviour
             SetShootType("Standard");
             canShoot = true;
         }
+
+        animator.SetBool("IsCharging", false);
     }
+
 
     public void ShootProjectile(Vector3 position, Vector3 direction, bool isBounceShot = false)
     {
@@ -152,7 +161,7 @@ public class PlayerShooting : NetworkBehaviour
     public void SetShootType(string newShootType, int newAmmo = 0)
     {
         shootType = newShootType;
-        ammo.Value = newAmmo;
+        ammo.Value = 10;
     }
 
     public void CanShoot()
