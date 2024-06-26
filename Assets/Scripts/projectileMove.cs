@@ -1,4 +1,3 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -12,10 +11,9 @@ public class ProjectileMove : NetworkBehaviour
     private NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>(writePerm: NetworkVariableWritePermission.Server);
     private NetworkVariable<Vector3> networkVelocity = new NetworkVariable<Vector3>(writePerm: NetworkVariableWritePermission.Server);
 
-    public bool isSplitShot = false;
     public bool isBounceShot = false;
     private int remainingBounces = 3;
-    private float bounceAngle = 45f;  
+    private float bounceAngle = 45f;
 
     public float lastSyncTime = 0f;
     private float syncInterval = 0.1f;
@@ -76,8 +74,6 @@ public class ProjectileMove : NetworkBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-
-
         if (!IsServer) return;
 
         if (collision.gameObject == parent.gameObject)
@@ -89,7 +85,6 @@ public class ProjectileMove : NetworkBehaviour
         {
             return;
         }
-
 
         networkPosition.Value = transform.position;
         networkVelocity.Value = Vector3.zero;

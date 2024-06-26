@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using System.Threading.Tasks;
 using System.Collections;
 
 public class PlayerShooting : NetworkBehaviour
@@ -9,9 +8,8 @@ public class PlayerShooting : NetworkBehaviour
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private Transform shootTransform;
     [SerializeField] private List<GameObject> spawnedFireBalls = new List<GameObject>();
-
-     
-
+    [SerializeField] private int maxAmmo = 10;
+    private NetworkVariable<int> ammo = new NetworkVariable<int>(writePerm: NetworkVariableWritePermission.Owner);
 
     private PlayerMove playerMove;
     public bool canShoot = true;
@@ -25,32 +23,29 @@ public class PlayerShooting : NetworkBehaviour
     {
         playerMove = GetComponent<PlayerMove>();
         animator = GetComponent<Animator>();
+        ammo.Value = maxAmmo;
     }
 
     private void Update()
     {
         if (!IsOwner || isDisabled || !GameManager.Instance.inGame.Value) return;
 
-        if (Input.GetButtonDown("Fire1") && !playerMove.isMoving)
+        if (Input.GetButtonDown("Fire1") && !playerMove.isMoving && ammo.Value > 0)
         {
-           
-                animator.SetBool("IsCharging", true);
-                playerMove.isCharging = true;
-            
+            animator.SetBool("IsCharging", true);
+            playerMove.isCharging = true;
         }
 
         if (Input.GetButtonUp("Fire1"))
         {
-            
-                if (canShoot)
-                {
-                    animator.SetTrigger("Shoot");
-                }
-                canShoot = false;
+            if (canShoot && ammo.Value > 0)
+            {
+                animator.SetTrigger("Shoot");
+            }
+            canShoot = false;
 
-                playerMove.isCharging = false;
-                animator.SetBool("IsCharging", false);
-            
+            playerMove.isCharging = false;
+            animator.SetBool("IsCharging", false);
         }
     }
 
@@ -67,7 +62,7 @@ public class PlayerShooting : NetworkBehaviour
     {
         if (isDisabled) return;
 
-        if (shootType == "Standard")
+        if (shootType == "Standard" && ammo.Value == 0)
         {
             ShootProjectile(shootTransform.position, shootTransform.forward);
         }
@@ -83,6 +78,10 @@ public class PlayerShooting : NetworkBehaviour
         else if (shootType == "BounceShot")
         {
             ShootProjectile(shootTransform.position, shootTransform.forward, true);
+        }
+        if (shootType != "Standard")
+        {
+            ammo.Value--;
         }
     }
 
@@ -115,15 +114,15 @@ public class PlayerShooting : NetworkBehaviour
     {
         if (spawnedFireBalls.Count > 0)
         {
-            StartCoroutine(DestroyAfterDelay(0.27f)); 
+            StartCoroutine(DestroyAfterDelay(0.27f));
         }
     }
 
     private IEnumerator DestroyAfterDelay(float delay)
     {
-        yield return new WaitForSeconds(delay); 
+        yield return new WaitForSeconds(delay);
 
-        if (spawnedFireBalls.Count > 0) 
+        if (spawnedFireBalls.Count > 0)
         {
             GameObject toDestroy = spawnedFireBalls[0];
             toDestroy.GetComponent<NetworkObject>().Despawn();
