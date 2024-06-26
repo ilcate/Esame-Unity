@@ -85,9 +85,8 @@ public class ProjectileMove : NetworkBehaviour
             return;
         }
 
-        networkPosition.Value = transform.position;
-        networkVelocity.Value = Vector3.zero;
 
+       
         PlayerMove playerMove = collision.gameObject.GetComponent<PlayerMove>();
         if (playerMove != null && playerMove.isAlive.Value)
         {
