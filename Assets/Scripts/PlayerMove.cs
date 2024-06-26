@@ -13,8 +13,6 @@ public class PlayerMove : NetworkBehaviour
 
     public NetworkVariable<bool> isAlive = new NetworkVariable<bool>(true);
 
-    private NetworkVariable<bool> isDisabled = new NetworkVariable<bool>(false);
-
     Animator animator;
     Rigidbody rb;
 

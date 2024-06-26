@@ -12,41 +12,15 @@ public class UIManager : NetworkBehaviour
     public TextMeshProUGUI title;
     public Button AudioOn;
     public Button AudioOff;
-    private MusicController musiucController;
-
-    [SerializeField]
-    private Button startServerButton;
-
-    [SerializeField]
-    private Button startHostButton;
-
-    [SerializeField]
-    private Button startClientButton;
-
-    [SerializeField]
-    private TextMeshProUGUI playersInGameText;
-
-    [SerializeField]
-    private TMP_InputField joinCodeInput;
-
-    [SerializeField]
-    private Button executePhysicsButton;
-
-    [SerializeField]
-    private TextMeshProUGUI CodeDisplay;
-
-    [SerializeField]
-    private TextMeshProUGUI WinOrLose;
-
-    [SerializeField]
-    private Button restartGame;
-
-    [SerializeField]
-    private Button startGame;
-
-    [SerializeField]
-    private TextMeshProUGUI errorMessage;
-    private MusicController musicController;
+    public Button startHostButton;
+    public Button startClientButton;
+    public TMP_InputField joinCodeInput;
+    public TextMeshProUGUI CodeDisplay;
+    public TextMeshProUGUI WinOrLose;
+    public Button restartGame;
+    public Button startGame;
+    public TextMeshProUGUI errorMessage;
+    public MusicController musicController;
 
     private void Awake()
     {
