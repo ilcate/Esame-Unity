@@ -16,6 +16,10 @@ public class ProjectileMove : NetworkBehaviour
 
     public float lastSyncTime = 0f;
     private float syncInterval = 0.1f;
+    private float curSpeed;
+    private int curBounces = 0;
+    private Vector3 lastVelocity;
+    private Vector3 direction;
 
     void Start()
     {
@@ -100,10 +104,14 @@ public class ProjectileMove : NetworkBehaviour
             }
         }
 
-        if (isBounceShot && remainingBounces > 0)
+        if (isBounceShot && curBounces >= remainingBounces)
         {
-            remainingBounces--;
+            curSpeed = lastVelocity.magnitude;
+            direction = Vector3.Reflect(lastVelocity.normalized, collision.contacts[0].normal);
+            rb.velocity = direction * Mathf.Max(curSpeed, 0);
+            curBounces++;
         }
+
         else
         {
             parent.DestroyServerRpc();

@@ -73,6 +73,7 @@ MonoBehaviour:
   parent: {fileID: 5792164789713747901, guid: 4dcc61c0510f74ad2a414c6e653c624b, type: 3}
   speed: 20
   isBounceShot: 0
+  remainingBounces: 3
   lastSyncTime: 0
 --- !u!65 &2110935843740968654
 BoxCollider:
