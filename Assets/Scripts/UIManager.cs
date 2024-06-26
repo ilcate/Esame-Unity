@@ -3,6 +3,7 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class UIManager : NetworkBehaviour
 {
@@ -38,6 +39,9 @@ public class UIManager : NetworkBehaviour
     [SerializeField]
     private Button startGame;
 
+    [SerializeField]
+    private TextMeshProUGUI errorMessage;
+
     private void Awake()
     {
         Instance = this;
@@ -49,6 +53,7 @@ public class UIManager : NetworkBehaviour
         startGame.gameObject.SetActive(false);
         restartGame.gameObject.SetActive(false);
         WinOrLose.gameObject.SetActive(false);
+        errorMessage.gameObject.SetActive(false);
 
         startHostButton?.onClick.AddListener(async () =>
         {
@@ -64,7 +69,6 @@ public class UIManager : NetworkBehaviour
                 Debug.Log("Unable to start host...");
             }
 
-            startGame.gameObject.SetActive(true);
             startHostButton.gameObject.SetActive(false);
             startClientButton.gameObject.SetActive(false);
             joinCodeInput.gameObject.SetActive(false);
@@ -73,23 +77,38 @@ public class UIManager : NetworkBehaviour
 
         startClientButton?.onClick.AddListener(async () =>
         {
-            if (RelayManager.Instance.isRelayEnabled && !string.IsNullOrEmpty(joinCodeInput.text))
-                await RelayManager.Instance.JoinRelay(joinCodeInput.text);
 
-            if (NetworkManager.Singleton.StartClient())
+            if (!string.IsNullOrEmpty(joinCodeInput.text))
             {
-                Debug.Log("Client started...");
+                if (RelayManager.Instance.isRelayEnabled)
+                    await RelayManager.Instance.JoinRelay(joinCodeInput.text);
+
+                if (NetworkManager.Singleton.StartClient())
+                {
+                    Debug.Log("Client started...");
+                }
+                else
+                {
+                    Debug.Log("Unable to start client...");
+                }
+
+                CodeDisplay.text = RelayManager.Instance.code;
+                startHostButton.gameObject.SetActive(false);
+                startClientButton.gameObject.SetActive(false);
+                errorMessage.gameObject.SetActive(false);
+                joinCodeInput.gameObject.SetActive(false);
+
+                
             }
             else
             {
-                Debug.Log("Unable to start client...");
+                errorMessage.gameObject.SetActive(true);
+                errorMessage.text = "insert a valid code";
             }
 
-            CodeDisplay.text = RelayManager.Instance.code;
-            startHostButton.gameObject.SetActive(false);
-            startClientButton.gameObject.SetActive(false);
-            joinCodeInput.gameObject.SetActive(false);
+            CheckPlayersCountServerRpc();
         });
+
 
         startGame?.onClick.AddListener(() =>
         {
@@ -101,6 +120,36 @@ public class UIManager : NetworkBehaviour
         {
             RestartGameServerRpc();
         });
+
+        NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
+        {
+            CheckPlayersCountServerRpc();
+            errorMessage.gameObject.SetActive(false); 
+        };
+
+        NetworkManager.Singleton.OnClientDisconnectCallback += (clientId) =>
+        {
+            CheckPlayersCountServerRpc();
+        };
+    }
+
+
+
+    [ServerRpc(RequireOwnership = false)]
+    private void CheckPlayersCountServerRpc()
+    {
+        int playerCount = NetworkManager.Singleton.ConnectedClientsList.Count;
+        UpdateStartGameButtonClientRpc(playerCount);
+    }
+
+    [ClientRpc]
+    private void UpdateStartGameButtonClientRpc(int playerCount)
+    {
+        if (IsHost)
+        {
+            startGame.gameObject.SetActive(playerCount > 1);
+        }
+        
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -150,11 +199,9 @@ public class UIManager : NetworkBehaviour
         WinOrLose.gameObject.SetActive(true);
     }
 
-
     public void UIRestartGame()
     {
         restartGame.gameObject.SetActive(false);
-
         WinOrLose.gameObject.SetActive(false);
     }
 }
