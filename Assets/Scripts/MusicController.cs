@@ -4,15 +4,46 @@ using UnityEngine;
 
 public class MusicController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public AudioSource audioSource;
+
+    public void PlayMusic()
     {
-        
+        if (!audioSource.isPlaying)
+        {
+            audioSource.Play();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void StopMusic()
     {
-        
+        if (!audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+    }
+
+    public void PauseMusic()
+    {
+        if (audioSource.isPlaying)
+        {
+            audioSource.Pause();
+        }
+    }
+
+    public void ResumeMusic()
+    {
+        if (!audioSource.isPlaying)
+        {
+            audioSource.UnPause();
+        }
+    }
+
+    public void ChangeBgMusic(AudioClip music)
+    {
+        if (audioSource.clip.name == music.name)
+            return;
+        audioSource.Stop();
+        audioSource.clip = music;
+        audioSource.Play();
     }
 }
