@@ -62,7 +62,7 @@ public class PlayerShooting : NetworkBehaviour
     {
         if (isDisabled) return;
 
-        if (shootType == "Standard" && ammo.Value == 0)
+        if (shootType == "Standard")
         {
             ShootProjectile(shootTransform.position, shootTransform.forward);
         }
