@@ -6,6 +6,11 @@ public class MusicController : MonoBehaviour
 {
     public AudioSource audioSource;
 
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
+
     public void PlayMusic()
     {
         if (!audioSource.isPlaying)
@@ -16,7 +21,7 @@ public class MusicController : MonoBehaviour
 
     public void StopMusic()
     {
-        if (!audioSource.isPlaying)
+        if (audioSource.isPlaying)
         {
             audioSource.Stop();
         }

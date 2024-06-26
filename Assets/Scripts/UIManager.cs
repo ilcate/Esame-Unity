@@ -8,6 +8,11 @@ using System;
 public class UIManager : NetworkBehaviour
 {
     public static UIManager Instance { get; private set; }
+    public RawImage video;
+    public TextMeshProUGUI title;
+    public Button AudioOn;
+    public Button AudioOff;
+    private MusicController musiucController;
 
     [SerializeField]
     private Button startServerButton;
@@ -41,6 +46,7 @@ public class UIManager : NetworkBehaviour
 
     [SerializeField]
     private TextMeshProUGUI errorMessage;
+    private MusicController musicController;
 
     private void Awake()
     {
@@ -54,6 +60,7 @@ public class UIManager : NetworkBehaviour
         restartGame.gameObject.SetActive(false);
         WinOrLose.gameObject.SetActive(false);
         errorMessage.gameObject.SetActive(false);
+        AudioOff.gameObject.SetActive(false);
 
         startHostButton?.onClick.AddListener(async () =>
         {
@@ -73,6 +80,8 @@ public class UIManager : NetworkBehaviour
             startClientButton.gameObject.SetActive(false);
             joinCodeInput.gameObject.SetActive(false);
             CodeDisplay.text = RelayManager.Instance.code;
+            video.gameObject.SetActive(false);
+            title.gameObject.SetActive(false);
         });
 
         startClientButton?.onClick.AddListener(async () =>
@@ -97,8 +106,9 @@ public class UIManager : NetworkBehaviour
                 startClientButton.gameObject.SetActive(false);
                 errorMessage.gameObject.SetActive(false);
                 joinCodeInput.gameObject.SetActive(false);
+                video.gameObject.SetActive(false);
+                title.gameObject.SetActive(false);
 
-                
             }
             else
             {
@@ -119,6 +129,21 @@ public class UIManager : NetworkBehaviour
         restartGame?.onClick.AddListener(() =>
         {
             RestartGameServerRpc();
+        });
+
+        musicController = FindAnyObjectByType<MusicController>();
+        AudioOn?.onClick.AddListener(() =>
+        {
+            musicController.PauseMusic();
+            AudioOn.gameObject.SetActive(false);
+            AudioOff.gameObject.SetActive(true);
+        });
+
+        AudioOff?.onClick.AddListener(() =>
+        {
+            musicController.ResumeMusic();
+            AudioOff.gameObject.SetActive(false);
+            AudioOn.gameObject.SetActive(true);
         });
 
         NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
