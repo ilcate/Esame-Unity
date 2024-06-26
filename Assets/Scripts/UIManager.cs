@@ -39,6 +39,10 @@ public class UIManager : NetworkBehaviour
     [SerializeField]
     private Button startGame;
 
+    public RawImage video;
+
+    public TextMeshProUGUI title;
+
     [SerializeField]
     private TextMeshProUGUI errorMessage;
 
@@ -73,6 +77,11 @@ public class UIManager : NetworkBehaviour
             startClientButton.gameObject.SetActive(false);
             joinCodeInput.gameObject.SetActive(false);
             CodeDisplay.text = RelayManager.Instance.code;
+
+
+            video.gameObject.SetActive(false);
+            title.gameObject.SetActive(false);
+
         });
 
         startClientButton?.onClick.AddListener(async () =>
@@ -98,7 +107,11 @@ public class UIManager : NetworkBehaviour
                 errorMessage.gameObject.SetActive(false);
                 joinCodeInput.gameObject.SetActive(false);
 
-                
+                video.gameObject.SetActive(false);
+                title.gameObject.SetActive(false);
+
+
+
             }
             else
             {
