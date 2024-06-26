@@ -54,7 +54,6 @@ public class GameManager : NetworkBehaviour
         }
 
         UIManager.Instance.UIRestartGame();
-
         StartGame();
     }
 
