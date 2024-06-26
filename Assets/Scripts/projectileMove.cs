@@ -12,8 +12,7 @@ public class ProjectileMove : NetworkBehaviour
     private NetworkVariable<Vector3> networkVelocity = new NetworkVariable<Vector3>(writePerm: NetworkVariableWritePermission.Server);
 
     public bool isBounceShot = false;
-    private int remainingBounces = 3;
-    private float bounceAngle = 45f;
+    public int remainingBounces = 3;
 
     public float lastSyncTime = 0f;
     private float syncInterval = 0.1f;
