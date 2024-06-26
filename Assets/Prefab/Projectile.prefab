@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1120632892
+  GlobalObjectIdHash: 3554811228
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -72,7 +72,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parent: {fileID: 5792164789713747901, guid: 4dcc61c0510f74ad2a414c6e653c624b, type: 3}
   speed: 20
-  fireballPrefab: {fileID: 1142682751626895652}
+  isBounceShot: 0
+  lastSyncTime: 0
 --- !u!65 &2110935843740968654
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -80,7 +81,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1142682751626895652}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: af89c73bda114b546911efe3406d42b5, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

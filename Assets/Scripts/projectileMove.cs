@@ -104,10 +104,6 @@ public class ProjectileMove : NetworkBehaviour
         if (isBounceShot && remainingBounces > 0)
         {
             remainingBounces--;
-            Vector3 reflectDirection = Vector3.Reflect(rb.velocity.normalized, collision.contacts[0].normal);
-            reflectDirection = Quaternion.Euler(0, bounceAngle, 0) * reflectDirection;
-            rb.velocity = reflectDirection * speed;
-            networkVelocity.Value = rb.velocity;
         }
         else
         {

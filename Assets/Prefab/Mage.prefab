@@ -978,6 +978,8 @@ MonoBehaviour:
   fireballPrefab: {fileID: 1142682751626895652, guid: aecce0554039a442bbf184611b777087, type: 3}
   shootTransform: {fileID: 4432957948409221935}
   spawnedFireBalls: []
+  canShoot: 1
+  material: {fileID: 13400000, guid: af89c73bda114b546911efe3406d42b5, type: 2}
   shootType: Standard
 --- !u!114 &6997736989842208624
 MonoBehaviour:
