@@ -17,7 +17,7 @@ public class PlayerShooting : NetworkBehaviour
     public PhysicMaterial material;
 
     public string shootType = "Standard";
-    private int ammo = 0;
+    private NetworkVariable<int> ammo = new NetworkVariable<int>(0);
 
     private Animator animator;
 
@@ -74,9 +74,9 @@ public class PlayerShooting : NetworkBehaviour
             ShootProjectile(shootTransform.position, shootTransform.forward);
         }
 
-        if (ammo > 0)
+        if (ammo.Value > 0)
         {
-            ammo--;
+            ammo.Value--;
 
             if (shootType == "MultiShot")
             {
@@ -95,7 +95,7 @@ public class PlayerShooting : NetworkBehaviour
 
         }
 
-        if (ammo <= 0)
+        if (ammo.Value <= 0)
         {
             Debug.Log("setted to standard");
             SetShootType("Standard");
@@ -152,7 +152,7 @@ public class PlayerShooting : NetworkBehaviour
     public void SetShootType(string newShootType, int newAmmo = 0)
     {
         shootType = newShootType;
-        ammo = newAmmo;
+        ammo.Value = newAmmo;
     }
 
     public void CanShoot()
