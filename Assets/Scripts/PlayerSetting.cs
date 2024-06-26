@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using TMPro;
 using Unity.Collections;
+using System.Data;
 
 public class PlayerSetting : NetworkBehaviour
 {
@@ -32,6 +33,9 @@ public class PlayerSetting : NetworkBehaviour
         playerName.text = networkPlayerName.Value.ToString();
 
         Renderer hatRenderer = hat.GetComponent<Renderer>();
+
+
+  
 
         switch (OwnerClientId)
         {
