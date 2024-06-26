@@ -63,10 +63,14 @@ public class PlayerShooting : NetworkBehaviour
     {
         if (isDisabled) return;
 
+        fireballPrefab.GetComponent<Collider>().material = null;
+        if (shootType == "BounceShot")
+        {
+            fireballPrefab.GetComponent<Collider>().material = material;
+        }
 
         if (shootType == "Standard")
         {
-            fireballPrefab.GetComponent<Collider>().material = null;
             ShootProjectile(shootTransform.position, shootTransform.forward);
         }
 
@@ -76,7 +80,7 @@ public class PlayerShooting : NetworkBehaviour
 
             if (shootType == "MultiShot")
             {
-                fireballPrefab.GetComponent<Collider>().material = null;
+
                 Vector3 baseDirection = shootTransform.forward;
                 ShootProjectile(shootTransform.position, baseDirection);
                 Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * baseDirection;
@@ -86,7 +90,6 @@ public class PlayerShooting : NetworkBehaviour
             }
             else if (shootType == "BounceShot")
             {
-                fireballPrefab.GetComponent<Collider>().material = material;
                 ShootProjectile(shootTransform.position, shootTransform.forward, true);
             }
 
