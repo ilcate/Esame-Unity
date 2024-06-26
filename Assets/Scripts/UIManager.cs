@@ -149,4 +149,12 @@ public class UIManager : NetworkBehaviour
         WinOrLose.text = "You win";
         WinOrLose.gameObject.SetActive(true);
     }
+
+
+    public void UIRestartGame()
+    {
+        restartGame.gameObject.SetActive(false);
+
+        WinOrLose.gameObject.SetActive(false);
+    }
 }

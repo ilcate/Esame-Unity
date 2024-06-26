@@ -97,7 +97,7 @@ public class ProjectileMove : NetworkBehaviour
         PlayerMove playerMove = collision.gameObject.GetComponent<PlayerMove>();
         if (playerMove != null)
         {
-            playerMove.DisableMovement();
+            playerMove.DisableMovementServerRpc();
 
             PlayerShooting playerShooting = collision.gameObject.GetComponent<PlayerShooting>();
             if (playerShooting != null)

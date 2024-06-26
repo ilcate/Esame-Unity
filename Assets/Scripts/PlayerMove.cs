@@ -103,6 +103,7 @@ public class PlayerMove : NetworkBehaviour
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
 
+
         if (isCharging)
         {
             if (moveHorizontal != 0 || moveVertical != 0)
@@ -146,24 +147,32 @@ public class PlayerMove : NetworkBehaviour
         }
     }
 
-    public void DisableMovement()
+
+    [ServerRpc(RequireOwnership = false)]
+    public void DisableMovementServerRpc()
     {
         if (IsServer)
         {
             isAlive.Value = false;
-            rb.velocity = Vector3.zero;
-            animator.SetBool("IsMoving", false);
-            animator.SetBool("IsDead", true);
-            DisableClientRpc();
+
         }
+
+        rb.velocity = Vector3.zero;
+        animator.SetBool("IsMoving", false);
+        animator.SetBool("IsDead", true);
+        animator.SetTrigger("Die");
+        DisableClientRpc();
+        
     }
 
     [ClientRpc]
     public void DisableClientRpc()
     {
+        isAlive.Value = false;
         rb.velocity = Vector3.zero;
         animator.SetBool("IsMoving", false);
-        animator.SetBool("IsDead", true);
+        animator.SetBool("IsDead", true); 
+        animator.SetTrigger("Die");
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -172,8 +181,7 @@ public class PlayerMove : NetworkBehaviour
         Debug.Log($"ReviveServerRpc called for client {OwnerClientId}");
         isAlive.Value = true;
         rb.velocity = Vector3.zero;
-        animator.SetBool("IsMoving", false);
-        animator.SetBool("IsDead", false);
+       
         TpToMapClientRpc();
     }
 
@@ -181,8 +189,17 @@ public class PlayerMove : NetworkBehaviour
     public void ReviveClientRpc()
     {
         Debug.Log($"ReviveClientRpc called for client {OwnerClientId}");
+        isAlive.Value = true;
         rb.velocity = Vector3.zero;
-        animator.SetBool("IsMoving", false);
-        animator.SetBool("IsDead", false);
     }
+
+    public void RevivePlayers()
+    {
+        animator.SetBool("IsDead", false);
+
+        ReviveServerRpc();
+        ReviveClientRpc();
+    }
+
+
 }

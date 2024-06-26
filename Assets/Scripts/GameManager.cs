@@ -38,26 +38,22 @@ public class GameManager : NetworkBehaviour
 
     public void RestartGame()
     {
-        // Fermiamo il gioco attuale
         inGame.Value = false;
 
-        // Fermiamo il respawn dei powerup
         StopAllCoroutines();
 
-        // Riposizioniamo tutti i giocatori
+
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
             var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
-            if (playerMove != null)
-            {
-                playerMove.ReviveServerRpc();
-            }
+            var playerShooting = client.PlayerObject.GetComponent<PlayerShooting>();
+
+            playerMove.RevivePlayers();
+            playerShooting.EnableShooting();
         }
 
-        // Resettiamo altre variabili di gioco se necessario
-        // Ad esempio, resettiamo il timer, il punteggio, ecc.
+        UIManager.Instance.UIRestartGame();
 
-        // Riavviamo il gioco
         StartGame();
     }
 
@@ -181,4 +177,4 @@ public class GameManager : NetworkBehaviour
 
 
 
-//il giocatore che respawna poi non può più sparare e la ui va fixata
+//il giocatore che respawna poi non può più sparare
