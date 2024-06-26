@@ -33,8 +33,10 @@ public class GameManager : NetworkBehaviour
         TeleportAllPlayers();
         Debug.Log("Game started!");
 
-        StartCoroutine(SpawnPowerUps());
+
         inGame.Value = true;
+        StartCoroutine(SpawnPowerUps());
+      
     }
 
     public void RestartGame()
@@ -48,6 +50,8 @@ public class GameManager : NetworkBehaviour
         {
             var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
             var playerShooting = client.PlayerObject.GetComponent<PlayerShooting>();
+
+            playerShooting.shootType = "Standard";
 
             playerMove.RevivePlayers();
             playerShooting.EnableShooting();

@@ -60,16 +60,17 @@ public class PlayerShooting : NetworkBehaviour
     {
         if (isDisabled) return;
 
-        // Decrementa le munizioni prima di sparare
+
+        if (shootType == "Standard")
+        {
+            ShootProjectile(shootTransform.position, shootTransform.forward);
+        }
+
         if (ammo > 0)
         {
             ammo--;
 
-            if (shootType == "Standard")
-            {
-                ShootProjectile(shootTransform.position, shootTransform.forward);
-            }
-            else if (shootType == "MultiShot")
+            if (shootType == "MultiShot")
             {
                 Vector3 baseDirection = shootTransform.forward;
                 ShootProjectile(shootTransform.position, baseDirection);
@@ -83,12 +84,13 @@ public class PlayerShooting : NetworkBehaviour
                 ShootProjectile(shootTransform.position, shootTransform.forward, true);
             }
 
-            // Se le munizioni sono finite, torna al tipo di sparo standard
-            if (ammo <= 0)
-            {
-                SetShootType("Standard");
-                canShoot = true; // Assicurati che possa sparare dopo il cambio di tipo di sparo
-            }
+        }
+
+        if (ammo <= 0)
+        {
+            Debug.Log("setted to standard");
+            SetShootType("Standard");
+            canShoot = true;
         }
     }
 
@@ -141,8 +143,7 @@ public class PlayerShooting : NetworkBehaviour
     public void SetShootType(string newShootType, int newAmmo = 0)
     {
         shootType = newShootType;
-        ammo = newAmmo
-        Debug.Log($"Shoot type set to: {shootType}");
+        ammo = newAmmo;
     }
 
     public void CanShoot()
