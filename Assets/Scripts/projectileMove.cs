@@ -95,7 +95,7 @@ public class ProjectileMove : NetworkBehaviour
         networkVelocity.Value = Vector3.zero;
 
         PlayerMove playerMove = collision.gameObject.GetComponent<PlayerMove>();
-        if (playerMove != null)
+        if (playerMove != null && playerMove.isAlive.Value)
         {
             playerMove.DisableMovementServerRpc();
 

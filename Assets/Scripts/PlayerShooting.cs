@@ -10,8 +10,11 @@ public class PlayerShooting : NetworkBehaviour
     [SerializeField] private Transform shootTransform;
     [SerializeField] private List<GameObject> spawnedFireBalls = new List<GameObject>();
 
+     
+
+
     private PlayerMove playerMove;
-    private bool canShoot = true;
+    public bool canShoot = true;
     private bool isDisabled = false;
 
     public string shootType = "Standard";
@@ -26,21 +29,19 @@ public class PlayerShooting : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsOwner || isDisabled) return;
+        if (!IsOwner || isDisabled || !GameManager.Instance.inGame.Value) return;
 
         if (Input.GetButtonDown("Fire1") && !playerMove.isMoving)
         {
-            if (GameManager.Instance.inGame.Value)
-            {
+           
                 animator.SetBool("IsCharging", true);
                 playerMove.isCharging = true;
-            }
+            
         }
 
         if (Input.GetButtonUp("Fire1"))
         {
-            if (GameManager.Instance.inGame.Value)
-            {
+            
                 if (canShoot)
                 {
                     animator.SetTrigger("Shoot");
@@ -49,7 +50,7 @@ public class PlayerShooting : NetworkBehaviour
 
                 playerMove.isCharging = false;
                 animator.SetBool("IsCharging", false);
-            }
+            
         }
     }
 
@@ -137,7 +138,7 @@ public class PlayerShooting : NetworkBehaviour
         Debug.Log($"Shoot type set to: {shootType}");
     }
 
-    private void CanShoot()
+    public void CanShoot()
     {
         canShoot = true;
     }

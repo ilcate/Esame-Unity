@@ -29,11 +29,12 @@ public class GameManager : NetworkBehaviour
 
     public void StartGame()
     {
-        inGame.Value = true;
+        
         TeleportAllPlayers();
         Debug.Log("Game started!");
 
         StartCoroutine(SpawnPowerUps());
+        inGame.Value = true;
     }
 
     public void RestartGame()
@@ -116,9 +117,15 @@ public class GameManager : NetworkBehaviour
                 foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
                 {
                     var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
+                    var playerShooting = client.PlayerObject.GetComponent<PlayerShooting>();
+
+
+                    playerShooting.DisableShooting();
+
                     if (playerMove != null)
                     {
                         SendVictoryOrDefeatClientRpc(playerMove.OwnerClientId, playerMove.isAlive.Value);
+                        
                     }
                 }
             }
@@ -172,9 +179,3 @@ public class GameManager : NetworkBehaviour
     }
 }
 
-
-
-
-
-
-//il giocatore che respawna poi non può più sparare
