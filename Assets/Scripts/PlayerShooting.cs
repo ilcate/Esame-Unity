@@ -8,14 +8,13 @@ public class PlayerShooting : NetworkBehaviour
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private Transform shootTransform;
     [SerializeField] private List<GameObject> spawnedFireBalls = new List<GameObject>();
-    [SerializeField] private int maxAmmo = 10;
-    private NetworkVariable<int> ammo = new NetworkVariable<int>(writePerm: NetworkVariableWritePermission.Owner);
 
     private PlayerMove playerMove;
     public bool canShoot = true;
     private bool isDisabled = false;
 
     public string shootType = "Standard";
+    private int ammo = 0;
 
     private Animator animator;
 
@@ -23,14 +22,13 @@ public class PlayerShooting : NetworkBehaviour
     {
         playerMove = GetComponent<PlayerMove>();
         animator = GetComponent<Animator>();
-        ammo.Value = maxAmmo;
     }
 
     private void Update()
     {
         if (!IsOwner || isDisabled || !GameManager.Instance.inGame.Value) return;
 
-        if (Input.GetButtonDown("Fire1") && !playerMove.isMoving && ammo.Value > 0)
+        if (Input.GetButtonDown("Fire1") && !playerMove.isMoving)
         {
             animator.SetBool("IsCharging", true);
             playerMove.isCharging = true;
@@ -38,7 +36,7 @@ public class PlayerShooting : NetworkBehaviour
 
         if (Input.GetButtonUp("Fire1"))
         {
-            if (canShoot && ammo.Value > 0)
+            if (canShoot)
             {
                 animator.SetTrigger("Shoot");
             }
@@ -62,26 +60,35 @@ public class PlayerShooting : NetworkBehaviour
     {
         if (isDisabled) return;
 
-        if (shootType == "Standard")
+        // Decrementa le munizioni prima di sparare
+        if (ammo > 0)
         {
-            ShootProjectile(shootTransform.position, shootTransform.forward);
-        }
-        else if (shootType == "MultiShot")
-        {
-            Vector3 baseDirection = shootTransform.forward;
-            ShootProjectile(shootTransform.position, baseDirection);
-            Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * baseDirection;
-            ShootProjectile(shootTransform.position, leftDirection);
-            Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * baseDirection;
-            ShootProjectile(shootTransform.position, rightDirection);
-        }
-        else if (shootType == "BounceShot")
-        {
-            ShootProjectile(shootTransform.position, shootTransform.forward, true);
-        }
-        if (shootType != "Standard")
-        {
-            ammo.Value--;
+            ammo--;
+
+            if (shootType == "Standard")
+            {
+                ShootProjectile(shootTransform.position, shootTransform.forward);
+            }
+            else if (shootType == "MultiShot")
+            {
+                Vector3 baseDirection = shootTransform.forward;
+                ShootProjectile(shootTransform.position, baseDirection);
+                Vector3 leftDirection = Quaternion.Euler(0, -20, 0) * baseDirection;
+                ShootProjectile(shootTransform.position, leftDirection);
+                Vector3 rightDirection = Quaternion.Euler(0, 20, 0) * baseDirection;
+                ShootProjectile(shootTransform.position, rightDirection);
+            }
+            else if (shootType == "BounceShot")
+            {
+                ShootProjectile(shootTransform.position, shootTransform.forward, true);
+            }
+
+            // Se le munizioni sono finite, torna al tipo di sparo standard
+            if (ammo <= 0)
+            {
+                SetShootType("Standard");
+                canShoot = true; // Assicurati che possa sparare dopo il cambio di tipo di sparo
+            }
         }
     }
 
@@ -131,9 +138,10 @@ public class PlayerShooting : NetworkBehaviour
         }
     }
 
-    public void SetShootType(string newShootType)
+    public void SetShootType(string newShootType, int newAmmo = 0)
     {
         shootType = newShootType;
+        ammo = newAmmo
         Debug.Log($"Shoot type set to: {shootType}");
     }
 
