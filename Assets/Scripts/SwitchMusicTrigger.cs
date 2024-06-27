@@ -7,10 +7,7 @@ public class SwitchMusicTrigger : MonoBehaviour
     public AudioClip newTrack;
     private MusicController musicController;
 
-    void Start()
-    {
-        musicController = FindAnyObjectByType<MusicController>();
-    }
+    
 
     private void OnTriggerEnter(Collider other)
     {
@@ -19,5 +16,10 @@ public class SwitchMusicTrigger : MonoBehaviour
             if (newTrack != null)
                 musicController.ChangeBgMusic(newTrack);
         }
+    }
+
+    void Start()
+    {
+        musicController = FindAnyObjectByType<MusicController>();
     }
 }

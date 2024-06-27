@@ -1,9 +1,7 @@
-using DilmerGames.Core.Singletons;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 
 public class UIManager : NetworkBehaviour
 {
@@ -26,6 +24,50 @@ public class UIManager : NetworkBehaviour
     {
         Instance = this;
         Cursor.visible = true;
+    }
+
+
+    [ServerRpc(RequireOwnership = false)]
+    private void CheckPlayersCountServerRpc()
+    {
+        int playerCount = NetworkManager.Singleton.ConnectedClientsList.Count;
+        UpdateStartGameButtonClientRpc(playerCount);
+    }
+
+
+    public void DisplayLose()
+    {
+        WinOrLose.text = "You lose";
+        WinOrLose.gameObject.SetActive(true);
+    }
+
+    public void DisplayWin()
+    {
+        WinOrLose.text = "You win";
+        WinOrLose.gameObject.SetActive(true);
+    }
+
+
+    [ClientRpc]
+    private void RestartGameClientRpc()
+    {
+        WinOrLose.gameObject.SetActive(false);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void RestartGameServerRpc()
+    {
+        RestartGameClientRpc();
+        GameManager.Instance.RestartGame();
+    }
+
+
+    public void ShowRestart()
+    {
+        if (IsHost)
+        {
+            restartGame.gameObject.SetActive(true);
+        }
     }
 
     void Start()
@@ -123,7 +165,7 @@ public class UIManager : NetworkBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += (clientId) =>
         {
             CheckPlayersCountServerRpc();
-            errorMessage.gameObject.SetActive(false); 
+            errorMessage.gameObject.SetActive(false);
         };
 
         NetworkManager.Singleton.OnClientDisconnectCallback += (clientId) =>
@@ -132,24 +174,12 @@ public class UIManager : NetworkBehaviour
         };
     }
 
-
-
-    [ServerRpc(RequireOwnership = false)]
-    private void CheckPlayersCountServerRpc()
-    {
-        int playerCount = NetworkManager.Singleton.ConnectedClientsList.Count;
-        UpdateStartGameButtonClientRpc(playerCount);
-    }
-
     [ClientRpc]
-    private void UpdateStartGameButtonClientRpc(int playerCount)
+    private void StartGameClientRpc()
     {
-        if (IsHost)
-        {
-            startGame.gameObject.SetActive(playerCount > 1);
-        }
-        
+        CodeDisplay.gameObject.SetActive(false);
     }
+
 
     [ServerRpc(RequireOwnership = false)]
     private void StartGameServerRpc()
@@ -159,48 +189,20 @@ public class UIManager : NetworkBehaviour
         GameManager.Instance.StartGame();
     }
 
-    [ClientRpc]
-    private void StartGameClientRpc()
-    {
-        CodeDisplay.gameObject.SetActive(false);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void RestartGameServerRpc()
-    {
-        RestartGameClientRpc();
-        GameManager.Instance.RestartGame();
-    }
-
-    [ClientRpc]
-    private void RestartGameClientRpc()
-    {
-        WinOrLose.gameObject.SetActive(false);
-    }
-
-    public void showRestart()
-    {
-        if (IsHost)
-        {
-            restartGame.gameObject.SetActive(true);
-        }
-    }
-
-    public void displayLose()
-    {
-        WinOrLose.text = "You lose";
-        WinOrLose.gameObject.SetActive(true);
-    }
-
-    public void displayWin()
-    {
-        WinOrLose.text = "You win";
-        WinOrLose.gameObject.SetActive(true);
-    }
-
     public void UIRestartGame()
     {
         restartGame.gameObject.SetActive(false);
         WinOrLose.gameObject.SetActive(false);
     }
+
+    [ClientRpc]
+    private void UpdateStartGameButtonClientRpc(int playerCount)
+    {
+        if (IsHost)
+        {
+            startGame.gameObject.SetActive(playerCount > 1);
+        }
+
+    }
+
 }

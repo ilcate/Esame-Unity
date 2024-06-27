@@ -8,24 +8,14 @@ using System.Data;
 
 public class PlayerSetting : NetworkBehaviour
 {
-    [SerializeField] private TextMeshProUGUI playerName;
-    [SerializeField] private NetworkVariable<FixedString128Bytes> networkPlayerName = new NetworkVariable<FixedString128Bytes>("Player: 0", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public TextMeshProUGUI playerName;
+    public NetworkVariable<FixedString128Bytes> networkPlayerName = new NetworkVariable<FixedString128Bytes>("Player: 0", NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    [SerializeField]
-    Texture2D rougeTexture;
-    [SerializeField]
-    Texture2D mageTexture;
-    [SerializeField]
-    Texture2D barbarianTexture;
-    [SerializeField]
-    Texture2D knightTexture;
-    
-
-
-
-
-    [SerializeField]
-    GameObject hat;
+    public Texture2D rougeTexture;
+    public Texture2D mageTexture;
+    public Texture2D barbarianTexture;
+    public Texture2D knightTexture;
+    public GameObject hat;
 
     public override void OnNetworkSpawn()
     {
@@ -34,8 +24,6 @@ public class PlayerSetting : NetworkBehaviour
 
         Renderer hatRenderer = hat.GetComponent<Renderer>();
 
-
-  
 
         switch (OwnerClientId)
         {

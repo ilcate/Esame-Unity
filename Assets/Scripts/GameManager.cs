@@ -17,7 +17,13 @@ public class GameManager : NetworkBehaviour
 
     private float secondsToWait = 20f;
 
-    public List<GameObject> activePowerUps = new List<GameObject>();
+    private List<GameObject> activePowerUps = new List<GameObject>();
+
+
+    public Task ActivateGameCam()
+    {
+        return cameraManager.ActivateGameCam();
+    }
 
     private void Awake()
     {
@@ -25,40 +31,37 @@ public class GameManager : NetworkBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
-    void Start()
+    private void CheckPlayersAlive()
     {
-        cameraManager = FindObjectOfType<CameraManager>();
-    }
+        if (!IsServer) return;
 
-    public void StartGame()
-    {
-        TeleportAllPlayers();
-
-        inGame.Value = true;
-        StartCoroutine(SpawnPowerUps());
-    }
-
-    public void RestartGame()
-    {
-        inGame.Value = false;
-        ClearSpawnedPowerUps();
-        ResetPlayerStatus();
-
-        UIManager.Instance.UIRestartGame();
-        StartGame();
-    }
-
-    private static void ResetPlayerStatus()
-    {
-        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+        if (inGame.Value)
         {
-            var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
-            var playerShooting = client.PlayerObject.GetComponent<PlayerShooting>();
+            int aliveCount = 0;
+            foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+            {
+                var playerMove = client.PlayerObject.GetComponent<PlayerMoveSet>();
+                if (playerMove != null && playerMove.isAlive.Value)
+                {
+                    aliveCount++;
+                }
+            }
 
-            playerShooting.shootType = "Standard";
+            if (aliveCount <= 1)
+            {
+                foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+                {
+                    var playerMove = client.PlayerObject.GetComponent<PlayerMoveSet>();
+                    var playerShooting = client.PlayerObject.GetComponent<PlayerShootingManager>();
 
-            playerMove.RevivePlayers();
-            playerShooting.EnableShooting();
+                    playerShooting.DisableShooting();
+
+                    if (playerMove != null)
+                    {
+                        SendVictoryOrDefeatClientRpc(playerMove.OwnerClientId, playerMove.isAlive.Value);
+                    }
+                }
+            }
         }
     }
 
@@ -75,26 +78,64 @@ public class GameManager : NetworkBehaviour
         activePowerUps.Clear();
     }
 
-    private void Update()
-    {
-        CheckPlayersAlive();
-    }
 
-    private void TeleportAllPlayers()
+
+
+    private IEnumerator DestroyPowerUpAfterDelay(GameObject powerUp, float delay)
     {
-        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+        yield return new WaitForSeconds(delay);
+        if (powerUp != null && powerUp.GetComponent<NetworkObject>().IsSpawned)
         {
-            var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
-            if (playerMove != null)
-            {
-                playerMove.TpToMapClientRpc();
-            }
+            powerUp.GetComponent<NetworkObject>().Despawn();
+            Destroy(powerUp);
+            activePowerUps.Remove(powerUp);
         }
     }
 
-    public Task ActivateGameCam()
+    private static void ResetPlayerStatus()
     {
-        return cameraManager.ActivateGameCam();
+        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            var playerMove = client.PlayerObject.GetComponent<PlayerMoveSet>();
+            var playerShooting = client.PlayerObject.GetComponent<PlayerShootingManager>();
+
+            playerShooting.shootType = "Standard";
+
+            playerMove.RevivePlayers();
+            playerShooting.EnableShooting();
+        }
+    }
+
+
+    public void RestartGame()
+    {
+        inGame.Value = false;
+        ClearSpawnedPowerUps();
+        ResetPlayerStatus();
+
+        UIManager.Instance.UIRestartGame();
+        StartGame();
+    }
+
+
+
+    [ClientRpc]
+    private void SendVictoryOrDefeatClientRpc(ulong clientId, bool isAlive)
+    {
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            if (isAlive)
+            {
+                UIManager.Instance.DisplayWin();
+            }
+            else
+            {
+                UIManager.Instance.DisplayLose();
+            }
+        }
+
+        UIManager.Instance.ShowRestart();
+        StopAllCoroutines();
     }
 
     private IEnumerator SpawnPowerUps()
@@ -108,61 +149,67 @@ public class GameManager : NetworkBehaviour
                 yield break;
             }
 
-            PowerUp.Instance.SpawnRandomPowerUpServerRpc(Random.Range(0, 1));
+            SpawnRandomPowerUpServerRpc();
             secondsToWait = Random.Range(20f, 40f);
         }
     }
 
-    private void CheckPlayersAlive()
+
+    [ServerRpc]
+    private void SpawnRandomPowerUpServerRpc()
     {
-        if (!IsServer) return;
+        Vector3 spawnPosition = new Vector3(
+            Random.Range(-3f, 2.5f),
+            1f,
+            Random.Range(1f, -6f)
+        );
 
-        if (inGame.Value)
+        GameObject prefabToSpawn = Random.value > 0.5f ? MultiShotPrefab : SplitShotPrefab;
+        GameObject powerUp = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
+        powerUp.GetComponent<NetworkObject>().Spawn();
+
+        activePowerUps.Add(powerUp);
+
+        var powerUpComponent = powerUp.GetComponent<PowerUp>();
+        powerUpComponent.powerUpName = prefabToSpawn.name;
+        powerUpComponent.ammo = 10;
+
+        StartCoroutine(DestroyPowerUpAfterDelay(powerUp, Random.Range(7f, 15f)));
+    }
+
+
+
+    void Start()
+    {
+        cameraManager = FindObjectOfType<CameraManager>();
+    }
+
+
+    public void StartGame()
+    {
+        TeleportAllPlayers();
+
+        inGame.Value = true;
+        StartCoroutine(SpawnPowerUps());
+    }
+
+    private void TeleportAllPlayers()
+    {
+        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
-            int aliveCount = 0;
-            foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+            var playerMove = client.PlayerObject.GetComponent<PlayerMoveSet>();
+            if (playerMove != null)
             {
-                var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
-                if (playerMove != null && playerMove.isAlive.Value)
-                {
-                    aliveCount++;
-                }
-            }
-
-            if (aliveCount <= 1)
-            {
-                foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
-                {
-                    var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
-                    var playerShooting = client.PlayerObject.GetComponent<PlayerShooting>();
-
-                    playerShooting.DisableShooting();
-
-                    if (playerMove != null)
-                    {
-                        SendVictoryOrDefeatClientRpc(playerMove.OwnerClientId, playerMove.isAlive.Value);
-                    }
-                }
+                playerMove.TpToMapClientRpc();
             }
         }
     }
 
-    [ClientRpc]
-    private void SendVictoryOrDefeatClientRpc(ulong clientId, bool isAlive)
-    {
-        if (NetworkManager.Singleton.LocalClientId == clientId)
-        {
-            if (isAlive)
-            {
-                UIManager.Instance.displayWin();
-            }
-            else
-            {
-                UIManager.Instance.displayLose();
-            }
-        }
 
-        UIManager.Instance.showRestart();
-        StopAllCoroutines();
+    private void Update()
+    {
+        CheckPlayersAlive();
     }
+
+
 }

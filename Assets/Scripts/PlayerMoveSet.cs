@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using System.Threading.Tasks;
 
-public class PlayerMove : NetworkBehaviour
+public class PlayerMoveSet : NetworkBehaviour
 {
     public float speed = 10f;
     public float rotationSpeed = 360f;
@@ -13,57 +13,34 @@ public class PlayerMove : NetworkBehaviour
 
     public NetworkVariable<bool> isAlive = new NetworkVariable<bool>(true);
 
-    Animator animator;
-    Rigidbody rb;
+    public Animator animator;
+    public Rigidbody rb;
 
-    public static PlayerMove Instance { get; private set; }
+    public static PlayerMoveSet Instance { get; private set; }
 
     private void Awake()
     {
         Instance = this;
     }
 
-    public override void OnNetworkSpawn()
-    {
-        Debug.Log(OwnerClientId);
-        if (IsOwner)
-        {
-            SetInitialPosition();
-        }
-    }
-
-    private void SetInitialPosition()
-    {
-        switch (OwnerClientId)
-        {
-            case 0:
-                transform.position = new Vector3(110f, 0f, -15f);
-                break;
-            case 1:
-                transform.position = new Vector3(113f, 0f, -15f);
-                break;
-            case 2:
-                transform.position = new Vector3(115f, 0f, -15f);
-                break;
-            case 3:
-                transform.position = new Vector3(117f, 0f, -15f);
-                break;
-            default:
-                transform.position = new Vector3(115f, 0f, -13f);
-                break;
-        }
-    }
-
     [ClientRpc]
-    public void TpToMapClientRpc()
+    public void DisableClientRpc()
     {
-        TpToMapClientRpcAsync();
+        isAlive.Value = false;
+        rb.velocity = Vector3.zero;
+        animator.SetBool("IsMoving", false);
+        animator.SetBool("IsDead", true);
+        animator.SetTrigger("Die");
     }
 
-    private async Task TpToMapClientRpcAsync()
+    [ServerRpc(RequireOwnership = false)]
+    public void DisableMovementServerRpc()
     {
-        await GameManager.Instance.ActivateGameCam();
-        MovePlayers();
+        if (IsServer)
+        {
+            isAlive.Value = false;
+            DisableClientRpc();
+        }
     }
 
     private void MovePlayers()
@@ -88,10 +65,75 @@ public class PlayerMove : NetworkBehaviour
         }
     }
 
+    public override void OnNetworkSpawn()
+    {
+        Debug.Log(OwnerClientId);
+        if (IsOwner)
+        {
+            SetInitialPosition();
+        }
+    }
+
+    [ClientRpc]
+    public void ReviveClientRpc()
+    {
+        isAlive.Value = true;
+        rb.velocity = Vector3.zero;
+        animator.SetBool("IsDead", false);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void ReviveServerRpc()
+    {
+        isAlive.Value = true;
+        rb.velocity = Vector3.zero;
+        ReviveClientRpc();
+    }
+
+    public void RevivePlayers()
+    {
+        animator.SetBool("IsDead", false);
+        ReviveServerRpc();
+    }
+
+    private void SetInitialPosition()
+    {
+        switch (OwnerClientId)
+        {
+            case 0:
+                transform.position = new Vector3(110f, 0f, -15f);
+                break;
+            case 1:
+                transform.position = new Vector3(113f, 0f, -15f);
+                break;
+            case 2:
+                transform.position = new Vector3(115f, 0f, -15f);
+                break;
+            case 3:
+                transform.position = new Vector3(117f, 0f, -15f);
+                break;
+            default:
+                transform.position = new Vector3(115f, 0f, -13f);
+                break;
+        }
+    }
+
     void Start()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
+    }
+
+    [ClientRpc]
+    public void TpToMapClientRpc()
+    {
+        TpToMapClientRpcAsync();
+    }
+
+    private async Task TpToMapClientRpcAsync()
+    {
+        await GameManager.Instance.ActivateGameCam();
+        MovePlayers();
     }
 
     void Update()
@@ -142,47 +184,5 @@ public class PlayerMove : NetworkBehaviour
 
             rb.velocity = new Vector3(moveHorizontal, 0, moveVertical) * speed;
         }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void DisableMovementServerRpc()
-    {
-        if (IsServer)
-        {
-            isAlive.Value = false;
-            DisableClientRpc();
-        }
-    }
-
-    [ClientRpc]
-    public void DisableClientRpc()
-    {
-        isAlive.Value = false;
-        rb.velocity = Vector3.zero;
-        animator.SetBool("IsMoving", false);
-        animator.SetBool("IsDead", true);
-        animator.SetTrigger("Die");
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void ReviveServerRpc()
-    {
-        isAlive.Value = true;
-        rb.velocity = Vector3.zero;
-        ReviveClientRpc();
-    }
-
-    [ClientRpc]
-    public void ReviveClientRpc()
-    {
-        isAlive.Value = true;
-        rb.velocity = Vector3.zero;
-        animator.SetBool("IsDead", false);
-    }
-
-    public void RevivePlayers()
-    {
-        animator.SetBool("IsDead", false);
-        ReviveServerRpc();
     }
 }
