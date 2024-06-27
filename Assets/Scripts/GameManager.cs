@@ -108,7 +108,7 @@ public class GameManager : NetworkBehaviour
                 yield break;
             }
 
-            PowerUp.Instance.SpawnRandomPowerUpServerRpc(Random.Range(0, 2));
+            PowerUp.Instance.SpawnRandomPowerUpServerRpc(Random.Range(0, 1));
             secondsToWait = Random.Range(20f, 40f);
         }
     }
