@@ -1,24 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MusicController : MonoBehaviour
 {
     public AudioSource audioSource;
 
+    public void ChangeBgMusic(AudioClip music)
+    {
+        if (audioSource.clip.name == music.name)
+            return;
+        audioSource.Stop();
+        audioSource.clip = music;
+        audioSource.Play();
+    }
+
+
+    public void ResumeMusic()
+    {
+        if (!audioSource.isPlaying)
+        {
+            audioSource.UnPause();
+        }
+    }
+
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
     }
-
-    public void PlayMusic()
-    {
-        if (!audioSource.isPlaying)
-        {
-            audioSource.Play();
-        }
-    }
-
+   
     public void StopMusic()
     {
         if (audioSource.isPlaying)
@@ -35,20 +43,13 @@ public class MusicController : MonoBehaviour
         }
     }
 
-    public void ResumeMusic()
+    public void PlayMusic()
     {
         if (!audioSource.isPlaying)
         {
-            audioSource.UnPause();
+            audioSource.Play();
         }
     }
 
-    public void ChangeBgMusic(AudioClip music)
-    {
-        if (audioSource.clip.name == music.name)
-            return;
-        audioSource.Stop();
-        audioSource.clip = music;
-        audioSource.Play();
-    }
+
 }

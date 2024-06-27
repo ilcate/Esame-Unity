@@ -1,6 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class GameManager : NetworkBehaviour
@@ -16,6 +17,8 @@ public class GameManager : NetworkBehaviour
 
     private float secondsToWait = 20f;
 
+    private List<GameObject> activePowerUps = new List<GameObject>();
+
     private void Awake()
     {
         Instance = this;
@@ -29,22 +32,25 @@ public class GameManager : NetworkBehaviour
 
     public void StartGame()
     {
-        
         TeleportAllPlayers();
-        Debug.Log("Game started!");
-
 
         inGame.Value = true;
         StartCoroutine(SpawnPowerUps());
-      
     }
 
     public void RestartGame()
     {
         inGame.Value = false;
 
-        StopAllCoroutines();
-
+        foreach (var powerUp in activePowerUps)
+        {
+            if (powerUp != null)
+            {
+                powerUp.GetComponent<NetworkObject>().Despawn();
+                Destroy(powerUp);
+            }
+        }
+        activePowerUps.Clear();
 
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
@@ -122,13 +128,11 @@ public class GameManager : NetworkBehaviour
                     var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
                     var playerShooting = client.PlayerObject.GetComponent<PlayerShooting>();
 
-
                     playerShooting.DisableShooting();
 
                     if (playerMove != null)
                     {
                         SendVictoryOrDefeatClientRpc(playerMove.OwnerClientId, playerMove.isAlive.Value);
-                        
                     }
                 }
             }
@@ -151,6 +155,7 @@ public class GameManager : NetworkBehaviour
         }
 
         UIManager.Instance.showRestart();
+        StopAllCoroutines();
     }
 
     [ServerRpc]
@@ -166,6 +171,8 @@ public class GameManager : NetworkBehaviour
         GameObject powerUp = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
         powerUp.GetComponent<NetworkObject>().Spawn();
 
+        activePowerUps.Add(powerUp);
+
         var powerUpComponent = powerUp.GetComponent<PowerUp>();
         powerUpComponent.powerUpName = prefabToSpawn.name;
         powerUpComponent.ammo = 10;
@@ -180,7 +187,7 @@ public class GameManager : NetworkBehaviour
         {
             powerUp.GetComponent<NetworkObject>().Despawn();
             Destroy(powerUp);
+            activePowerUps.Remove(powerUp); 
         }
     }
 }
-
