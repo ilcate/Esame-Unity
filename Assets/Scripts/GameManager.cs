@@ -17,7 +17,7 @@ public class GameManager : NetworkBehaviour
 
     private float secondsToWait = 20f;
 
-    private List<GameObject> activePowerUps = new List<GameObject>();
+    public List<GameObject> activePowerUps = new List<GameObject>();
 
     private void Awake()
     {
@@ -41,17 +41,15 @@ public class GameManager : NetworkBehaviour
     public void RestartGame()
     {
         inGame.Value = false;
+        ClearSpawnedPowerUps();
+        ResetPlayerStatus();
 
-        foreach (var powerUp in activePowerUps)
-        {
-            if (powerUp != null)
-            {
-                powerUp.GetComponent<NetworkObject>().Despawn();
-                Destroy(powerUp);
-            }
-        }
-        activePowerUps.Clear();
+        UIManager.Instance.UIRestartGame();
+        StartGame();
+    }
 
+    private static void ResetPlayerStatus()
+    {
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
             var playerMove = client.PlayerObject.GetComponent<PlayerMove>();
@@ -62,9 +60,19 @@ public class GameManager : NetworkBehaviour
             playerMove.RevivePlayers();
             playerShooting.EnableShooting();
         }
+    }
 
-        UIManager.Instance.UIRestartGame();
-        StartGame();
+    private void ClearSpawnedPowerUps()
+    {
+        foreach (var powerUp in activePowerUps)
+        {
+            if (powerUp != null)
+            {
+                powerUp.GetComponent<NetworkObject>().Despawn();
+                Destroy(powerUp);
+            }
+        }
+        activePowerUps.Clear();
     }
 
     private void Update()
@@ -100,7 +108,7 @@ public class GameManager : NetworkBehaviour
                 yield break;
             }
 
-            SpawnRandomPowerUpServerRpc();
+            PowerUp.Instance.SpawnRandomPowerUpServerRpc(Random.Range(0, 2));
             secondsToWait = Random.Range(20f, 40f);
         }
     }
@@ -156,38 +164,5 @@ public class GameManager : NetworkBehaviour
 
         UIManager.Instance.showRestart();
         StopAllCoroutines();
-    }
-
-    [ServerRpc]
-    private void SpawnRandomPowerUpServerRpc()
-    {
-        Vector3 spawnPosition = new Vector3(
-            Random.Range(-3f, 2.5f),
-            1f,
-            Random.Range(1f, -6f)
-        );
-
-        GameObject prefabToSpawn = Random.value > 0.5f ? MultiShotPrefab : SplitShotPrefab;
-        GameObject powerUp = Instantiate(prefabToSpawn, spawnPosition, Quaternion.identity);
-        powerUp.GetComponent<NetworkObject>().Spawn();
-
-        activePowerUps.Add(powerUp);
-
-        var powerUpComponent = powerUp.GetComponent<PowerUp>();
-        powerUpComponent.powerUpName = prefabToSpawn.name;
-        powerUpComponent.ammo = 10;
-
-        StartCoroutine(DestroyPowerUpAfterDelay(powerUp, Random.Range(7f, 15f)));
-    }
-
-    private IEnumerator DestroyPowerUpAfterDelay(GameObject powerUp, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        if (powerUp != null && powerUp.GetComponent<NetworkObject>().IsSpawned)
-        {
-            powerUp.GetComponent<NetworkObject>().Despawn();
-            Destroy(powerUp);
-            activePowerUps.Remove(powerUp); 
-        }
     }
 }

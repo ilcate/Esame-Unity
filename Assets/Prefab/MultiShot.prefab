@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 7431982152970891881}
   - component: {fileID: 2646391039219449467}
   - component: {fileID: 8652746418578867887}
-  - component: {fileID: 7706856261892545949}
   - component: {fileID: 1622134948837391713}
   m_Layer: 0
   m_Name: MultiShot
@@ -130,18 +129,6 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &7706856261892545949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5880310731907158546}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3091f9f68975c8e42ba6a58be3f2b1c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1622134948837391713
 MonoBehaviour:
   m_ObjectHideFlags: 0
